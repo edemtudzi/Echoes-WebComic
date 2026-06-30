@@ -7,12 +7,14 @@
   box-shadow: 0 14px 38px rgba(0, 0, 0, .08), inset 0 1px 0 rgba(255, 255, 255, .9);
 }
 
-.nav {
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  z-index: 60;
+.bottom-nav {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: max(18px, env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) !important;
+  z-index: 90;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,30 +24,30 @@
   padding: 8px;
   border: 1.5px solid rgba(9, 9, 9, .16);
   border-radius: 999px;
-  background: rgba(255, 254, 248, .82);
+  background: rgba(255, 254, 248, .86);
   box-shadow: 0 18px 48px rgba(0, 0, 0, .13), inset 0 1px 0 rgba(255, 255, 255, .9);
   backdrop-filter: blur(22px);
 }
 
-.nav form {
+.bottom-nav form {
   display: flex;
   margin: 0;
 }
 
-.nav .button,
-.nav .button-secondary {
+.bottom-nav .button,
+.bottom-nav .button-secondary {
   min-height: 38px;
   padding: 0 17px;
   font-size: 13px;
   white-space: nowrap;
 }
 
-.nav .button-secondary {
+.bottom-nav .button-secondary {
   background: rgba(255, 254, 248, .72);
   box-shadow: inset 4px 4px 11px rgba(0, 0, 0, .06), inset -4px -4px 11px rgba(255, 255, 255, .82);
 }
 
-.nav .button {
+.bottom-nav .button {
   box-shadow: 0 7px 14px rgba(0, 0, 0, .14), inset -5px -5px 10px rgba(0, 0, 0, .06), inset 5px 5px 12px rgba(255, 255, 255, .5);
 }
 
@@ -103,17 +105,17 @@
     max-width: 180px;
   }
 
-  .nav {
+  .bottom-nav {
     width: auto;
     max-width: calc(100% - 20px);
-    bottom: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
     justify-content: flex-start;
     overflow-x: auto;
     padding: 7px;
   }
 
-  .nav .button,
-  .nav .button-secondary {
+  .bottom-nav .button,
+  .bottom-nav .button-secondary {
     min-height: 36px;
     padding: 0 14px;
     font-size: 12px;
