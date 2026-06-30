@@ -8,8 +8,8 @@ import { getUser } from "@/lib/auth";
 import { signOut } from "@/app/actions/auth";
 
 export const metadata: Metadata = {
-  title: "Echoes Web-Comics",
-  description: "A reader-gated cinematic web-comic platform."
+  title: "Echoes of the Source",
+  description: "A cinematic web-comic platform."
 };
 
 export default async function RootLayout({
@@ -25,10 +25,10 @@ export default async function RootLayout({
       <body>
         <header className="topbar">
           <Link className="brand" href={user ? "/library" : "/"}>
-            <span className="mark" aria-hidden="true" />
-            <span>
-              <strong>Echoes Web-Comics</strong>
-              <span>{user?.email ?? "Guest reader"}</span>
+            <img className="brand-logo" src="/echoes-symbol.svg" alt="" aria-hidden="true" />
+            <span className="brand-copy">
+              <strong>Echoes</strong>
+              <span>of the Source</span>
             </span>
           </Link>
 
