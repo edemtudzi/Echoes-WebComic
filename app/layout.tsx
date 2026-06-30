@@ -18,6 +18,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getUser();
+  const isAdmin = user?.role === "admin";
 
   return (
     <html lang="en">
@@ -39,6 +40,11 @@ export default async function RootLayout({
               <Link className="button-secondary" href="/progress">
                 Progress
               </Link>
+              {isAdmin ? (
+                <Link className="button-secondary admin-nav-button" href="/admin">
+                  Admin
+                </Link>
+              ) : null}
               <form action={signOut}>
                 <button className="button" type="submit">
                   Sign Out
