@@ -1,0 +1,113 @@
+.topbar {
+  position: fixed !important;
+  top: 18px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 100 !important;
+  width: min(1180px, calc(100% - 32px)) !important;
+  max-width: min(1180px, calc(100% - 32px)) !important;
+  min-height: 64px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  padding: 10px 12px 10px 12px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 254, 248, .76) !important;
+  border: 1.5px solid rgba(9, 9, 9, .14) !important;
+  box-shadow: 0 16px 46px rgba(0, 0, 0, .10), inset 0 1px 0 rgba(255, 255, 255, .92) !important;
+  backdrop-filter: blur(22px);
+}
+
+.topbar .brand {
+  flex: 0 1 auto;
+  justify-content: flex-start;
+}
+
+.topbar .nav {
+  position: static !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  z-index: auto !important;
+  width: auto !important;
+  max-width: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.topbar .nav form {
+  display: flex;
+  margin: 0;
+}
+
+.topbar .nav .button,
+.topbar .nav .button-secondary {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.topbar .nav .button-secondary {
+  background: rgba(255, 254, 248, .78);
+  box-shadow: inset 4px 4px 11px rgba(0, 0, 0, .06), inset -4px -4px 11px rgba(255, 255, 255, .82);
+}
+
+.topbar .nav .button {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, .14), inset -5px -5px 10px rgba(0, 0, 0, .06), inset 5px 5px 12px rgba(255, 255, 255, .5);
+}
+
+.view {
+  padding-top: clamp(106px, 8vw, 132px) !important;
+  padding-bottom: clamp(50px, 7vw, 86px) !important;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    top: 10px !important;
+    width: min(100% - 22px, 1180px) !important;
+    max-width: min(100% - 22px, 1180px) !important;
+    min-height: auto !important;
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    border-radius: 30px !important;
+    padding: 10px !important;
+  }
+
+  .topbar .brand span {
+    max-width: 210px;
+  }
+
+  .topbar .nav {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    padding-top: 4px !important;
+  }
+
+  .topbar .nav .button,
+  .topbar .nav .button-secondary {
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+
+  .view {
+    padding-top: 132px !important;
+  }
+}
