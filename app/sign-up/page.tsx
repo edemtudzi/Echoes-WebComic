@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signUp } from "@/app/actions/auth";
+import { PasswordField } from "@/components/PasswordField";
 
 export default async function SignUpPage({
   searchParams
@@ -29,10 +30,15 @@ export default async function SignUpPage({
             <label htmlFor="email">Email</label>
             <input id="email" name="email" type="email" required placeholder="you@example.com" />
           </div>
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="password" required minLength={8} placeholder="At least 8 characters" />
-          </div>
+          <PasswordField
+            id="password"
+            name="password"
+            label="Password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            placeholder="At least 8 characters"
+          />
           <div className="actions">
             <button className="button" type="submit">
               Enter Library
