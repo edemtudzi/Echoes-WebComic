@@ -1,0 +1,171 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { updatePageStatus, uploadEpisodePage } from "@/app/actions/admin";
+import { requireAdmin } from "@/lib/auth";
+import { one, query } from "@/lib/db";
+
+export default async function EpisodePagesAdminPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ episodeId: string }>;
+  searchParams: Promise<{ error?: string; saved?: string }>;
+}) {
+  await requireAdmin();
+  const { episodeId } = await params;
+  const notices = await searchParams;
+  const episode = await one<{
+    id: string;
+    episode_number: number;
+    title: string;
+    synopsis: string;
+    status: string;
+    season_id: string;
+    season_number: number;
+    season_title: string;
+    comic_id: string;
+    comic_slug: string;
+    comic_title: string;
+  }>(
+    `select
+       e.id,
+       e.episode_number,
+       e.title,
+       e.synopsis,
+       e.status,
+       s.id as season_id,
+       s.season_number,
+       s.title as season_title,
+       c.id as comic_id,
+       c.slug as comic_slug,
+       c.title as comic_title
+     from public.episodes e
+     join public.seasons s on s.id = e.season_id
+     join public.comics c on c.id = s.comic_id
+     where e.id = $1`,
+    [episodeId]
+  );
+
+  if (!episode) {
+    notFound();
+  }
+
+  const pages = await query<{
+    id: string;
+    page_number: number;
+    image_path: string;
+    alt_text: string;
+    caption: string | null;
+    status: string;
+    created_at: string;
+  }>(
+    `select id, page_number, image_path, alt_text, caption, status, created_at
+     from public.pages
+     where episode_id = $1
+     order by page_number asc`,
+    [episode.id]
+  );
+
+  const pageRows = pages.map((page) => ({
+    ...page,
+    imageUrl: page.image_path
+  }));
+
+  return (
+    <main className="view">
+      <section className="section-head">
+        <div>
+          <div className="eyebrow">Admin / Pages</div>
+          <h2>{episode.title}</h2>
+        </div>
+        <Link className="button-secondary" href={`/admin/comics/${episode.comic_id}`}>
+          Back to Comic
+        </Link>
+      </section>
+
+      {notices.error ? <p className="warning">{notices.error}</p> : null}
+      {notices.saved ? <p className="warning">Saved.</p> : null}
+
+      <section className="reader">
+        <aside className="reader-side form-card">
+          <div className="eyebrow">{episode.comic_title}</div>
+          <h3>Episode {episode.episode_number}</h3>
+          <p>{episode.synopsis}</p>
+          <p className="hint">
+            Season {episode.season_number} / {episode.status} / {pageRows.length} page(s)
+          </p>
+        </aside>
+
+        <div className="stack">
+          <form className="form-card" action={uploadEpisodePage}>
+            <input type="hidden" name="episodeId" value={episode.id} />
+            <input type="hidden" name="comicSlug" value={episode.comic_slug} />
+            <input type="hidden" name="seasonNumber" value={episode.season_number} />
+            <input type="hidden" name="episodeNumber" value={episode.episode_number} />
+            <h3>Upload page</h3>
+            <div className="field">
+              <label htmlFor="page_number">Page number</label>
+              <input id="page_number" name="page_number" type="number" min={1} required defaultValue={pageRows.length + 1} />
+            </div>
+            <div className="field">
+              <label htmlFor="image">Image</label>
+              <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+            </div>
+            <div className="field">
+              <label htmlFor="alt_text">Alt text</label>
+              <input id="alt_text" name="alt_text" required placeholder="Kael walks through the broken world..." />
+            </div>
+            <div className="field">
+              <label htmlFor="caption">Caption</label>
+              <textarea id="caption" name="caption" />
+            </div>
+            <div className="field">
+              <label htmlFor="status">Status</label>
+              <select id="status" name="status" defaultValue="draft">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="hidden">Hidden</option>
+              </select>
+            </div>
+            <div className="actions">
+              <button className="button" type="submit">
+                Upload Page
+              </button>
+            </div>
+          </form>
+
+          {pageRows.length ? (
+            pageRows.map((page) => (
+              <article className="row-card" key={page.id}>
+                <h3>Page {page.page_number}</h3>
+                <p className="hint">{page.status} / {page.image_path}</p>
+                <img className="page-image" src={page.imageUrl ?? ""} alt={page.alt_text || `Page ${page.page_number}`} style={{ minHeight: 260, maxHeight: 520 }} />
+                {page.caption ? <p>{page.caption}</p> : null}
+                <form action={updatePageStatus} className="actions">
+                  <input type="hidden" name="episodeId" value={episode.id} />
+                  <input type="hidden" name="pageId" value={page.id} />
+                  <select name="status" defaultValue={page.status} aria-label={`Status for page ${page.page_number}`}>
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="hidden">Hidden</option>
+                  </select>
+                  <button className="button-small" type="submit">
+                    Update Status
+                  </button>
+                </form>
+              </article>
+            ))
+          ) : (
+            <div className="placeholder-page">
+              <div>
+                <div className="eyebrow">No Pages Yet</div>
+                <h3>Upload the first comic page.</h3>
+                <p>Once pages are published, readers will see them in the episode reader.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
