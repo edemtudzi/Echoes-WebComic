@@ -7,17 +7,17 @@
   z-index: 100 !important;
   width: min(1180px, calc(100% - 32px)) !important;
   max-width: min(1180px, calc(100% - 32px)) !important;
-  min-height: 68px !important;
+  min-height: 64px !important;
   margin: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: 16px !important;
-  padding: 9px 12px 9px 10px !important;
+  padding: 9px 12px 9px 12px !important;
   border-radius: 999px !important;
-  background: rgba(255, 254, 248, .78) !important;
+  background: rgba(255, 254, 248, .80) !important;
   border: 1.5px solid rgba(9, 9, 9, .14) !important;
-  box-shadow: 0 16px 46px rgba(0, 0, 0, .10), inset 0 1px 0 rgba(255, 255, 255, .92) !important;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .08), inset 0 1px 0 rgba(255, 255, 255, .92) !important;
   backdrop-filter: blur(22px);
 }
 
@@ -26,17 +26,16 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  gap: 11px !important;
+  gap: 10px !important;
   min-width: 0;
 }
 
 .brand-logo {
   display: block;
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
-  border-radius: 18px;
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .12));
+  border-radius: 14px;
 }
 
 .brand-copy {
@@ -49,15 +48,15 @@
   color: var(--ink);
   font-size: 18px !important;
   font-weight: 950;
-  letter-spacing: -.045em;
+  letter-spacing: -.04em;
   line-height: .95 !important;
 }
 
 .brand-copy span {
   color: var(--muted);
-  font-size: 12px !important;
+  font-size: 11px !important;
   font-weight: 850;
-  letter-spacing: .04em;
+  letter-spacing: .06em;
   text-transform: uppercase;
   max-width: none !important;
 }
@@ -116,7 +115,7 @@
 }
 
 .view {
-  padding-top: clamp(106px, 8vw, 132px) !important;
+  padding-top: clamp(104px, 8vw, 128px) !important;
   padding-bottom: clamp(50px, 7vw, 86px) !important;
 }
 
@@ -133,9 +132,9 @@
   }
 
   .brand-logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
   }
 
   .brand-copy strong {
