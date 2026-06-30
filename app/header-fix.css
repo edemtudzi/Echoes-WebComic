@@ -68,6 +68,13 @@
   box-shadow: inset 4px 4px 11px rgba(0, 0, 0, .06), inset -4px -4px 11px rgba(255, 255, 255, .82);
 }
 
+.topbar .nav .admin-nav-button {
+  background: var(--ink) !important;
+  color: var(--yellow) !important;
+  border-color: rgba(9, 9, 9, .86) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, .18), inset -5px -5px 10px rgba(0, 0, 0, .24), inset 5px 5px 12px rgba(255, 255, 255, .08) !important;
+}
+
 .topbar .nav .button {
   box-shadow: 0 8px 16px rgba(0, 0, 0, .14), inset -5px -5px 10px rgba(0, 0, 0, .06), inset 5px 5px 12px rgba(255, 255, 255, .5);
 }
