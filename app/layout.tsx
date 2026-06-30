@@ -27,25 +27,21 @@ export default async function RootLayout({
               <span>{user?.email ?? "Guest reader"}</span>
             </span>
           </Link>
-          <nav className="nav">
-            <Link className="button-secondary" href="/library">
-              Library
-            </Link>
-            <Link className="button-secondary" href="/progress">
-              Progress
-            </Link>
-            {user ? (
+          {user ? (
+            <nav className="nav">
+              <Link className="button-secondary" href="/library">
+                Library
+              </Link>
+              <Link className="button-secondary" href="/progress">
+                Progress
+              </Link>
               <form action={signOut}>
                 <button className="button" type="submit">
                   Sign Out
                 </button>
               </form>
-            ) : (
-              <Link className="button" href="/sign-up">
-                Create Account
-              </Link>
-            )}
-          </nav>
+            </nav>
+          ) : null}
         </header>
         {children}
       </body>
