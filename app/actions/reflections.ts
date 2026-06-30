@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { one, query } from "@/lib/db";
+import { one } from "@/lib/db";
 
 type ReflectionResult = {
   reflection_id: string;
