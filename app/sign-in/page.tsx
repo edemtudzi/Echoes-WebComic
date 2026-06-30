@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signIn } from "@/app/actions/auth";
+import { PasswordField } from "@/components/PasswordField";
 
 export default async function SignInPage({
   searchParams
@@ -25,10 +26,14 @@ export default async function SignInPage({
             <label htmlFor="email">Email</label>
             <input id="email" name="email" type="email" required placeholder="you@example.com" />
           </div>
-          <div className="field">
-            <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="password" required placeholder="Your password" />
-          </div>
+          <PasswordField
+            id="password"
+            name="password"
+            label="Password"
+            required
+            autoComplete="current-password"
+            placeholder="Your password"
+          />
           <div className="actions">
             <button className="button" type="submit">
               Sign In
