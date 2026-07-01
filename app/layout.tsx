@@ -6,6 +6,7 @@ import "./visual-refresh.css";
 import "./header-fix.css";
 import { getUser } from "@/lib/auth";
 import { signOut } from "@/app/actions/auth";
+import { HeaderNav } from "@/app/header-nav";
 
 export const metadata: Metadata = {
   title: "Echoes of the Source",
@@ -32,26 +33,7 @@ export default async function RootLayout({
             </span>
           </Link>
 
-          {user ? (
-            <nav className="nav" aria-label="Reader navigation">
-              <Link className="button-secondary" href="/library">
-                Library
-              </Link>
-              <Link className="button-secondary" href="/progress">
-                Progress
-              </Link>
-              {isAdmin ? (
-                <Link className="button-secondary admin-nav-button" href="/admin">
-                  Admin
-                </Link>
-              ) : null}
-              <form action={signOut}>
-                <button className="button" type="submit">
-                  Sign Out
-                </button>
-              </form>
-            </nav>
-          ) : null}
+          {user ? <HeaderNav isAdmin={isAdmin} signOutAction={signOut} /> : null}
         </header>
 
         {children}
