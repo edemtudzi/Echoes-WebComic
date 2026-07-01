@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { one, query } from "@/lib/db";
+import { ensureReflectionRepliesTable } from "@/lib/reflection-replies";
 
 type ReflectionResult = {
   reflection_id: string;
@@ -82,8 +83,48 @@ export async function submitReflection(formData: FormData) {
 
   if (nextEpisodePath) {
     revalidatePath(nextEpisodePath);
-    redirect(`${nextEpisodePath}?unlocked=1`);
+    redirect(`${nextEpisodePath}?unlocked=1#comments`);
   }
 
-  redirect(`${returnPath}?unlocked=1`);
+  redirect(`${returnPath}?unlocked=1#comments`);
+}
+
+export async function submitReflectionReply(formData: FormData) {
+  const reflectionId = String(formData.get("reflectionId") ?? "");
+  const episodeId = String(formData.get("episodeId") ?? "");
+  const returnPath = String(formData.get("returnPath") ?? "/library");
+  const body = String(formData.get("body") ?? "").trim();
+  const user = await requireUser();
+
+  if (!body || body.length < 2) {
+    redirect(`${returnPath}?error=${encodeURIComponent("Reply with at least 2 characters.")}#comments`);
+  }
+
+  try {
+    await ensureReflectionRepliesTable();
+
+    const parent = await one<{ id: string }>(
+      `select id
+       from public.reflections
+       where id = $1 and episode_id = $2 and moderation_status = 'approved'`,
+      [reflectionId, episodeId]
+    );
+
+    if (!parent) {
+      throw new Error("This public comment is no longer available for replies.");
+    }
+
+    await query(
+      `insert into public.reflection_replies (reflection_id, user_id, body, moderation_status)
+       values ($1, $2, $3, 'approved')`,
+      [reflectionId, user.id, body]
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not post reply.";
+    redirect(`${returnPath}?error=${encodeURIComponent(message)}#comments`);
+  }
+
+  revalidatePath(returnPath);
+  revalidatePath("/admin");
+  redirect(`${returnPath}#comments`);
 }
