@@ -41,21 +41,47 @@ function asRating(value: FormDataEntryValue | null) {
   return Number.isInteger(rating) && rating >= 1 && rating <= 5 ? rating : null;
 }
 
+async function allowMultipleEpisodeComments() {
+  await query(`alter table public.reflections drop constraint if exists reflections_user_id_episode_id_key`);
+}
+
+async function saveAdditionalComment(userId: string, episodeId: string, reaction: string, body: string) {
+  return one<ReflectionResult>(
+    `insert into public.reflections (user_id, episode_id, reaction, body, moderation_status)
+     values ($1, $2, $3, $4, 'approved')
+     returning id::text as reflection_id, null::text as unlocked_episode_id`,
+    [userId, episodeId, reaction, body]
+  );
+}
+
 export async function submitReflection(formData: FormData) {
   const episodeId = String(formData.get("episodeId") ?? "");
   const reaction = String(formData.get("reaction") ?? "");
   const rating = asRating(formData.get("rating"));
-  const body = String(formData.get("body") ?? "");
+  const body = String(formData.get("body") ?? "").trim();
   const returnPath = String(formData.get("returnPath") ?? "/library");
   const user = await requireUser();
   let nextEpisodePath: string | null = null;
 
+  if (!body) {
+    redirect(`${returnPath}?error=${encodeURIComponent("Write a comment before posting.")}#comments`);
+  }
+
   try {
-    const result = await one<ReflectionResult>(
-      `select reflection_id, unlocked_episode_id
-       from public.submit_episode_reflection($1, $2, $3, $4)`,
-      [user.id, episodeId, reaction, body]
+    await allowMultipleEpisodeComments();
+
+    const existingComment = await one<{ id: string }>(
+      `select id from public.reflections where user_id = $1 and episode_id = $2 limit 1`,
+      [user.id, episodeId]
     );
+
+    const result = existingComment
+      ? await saveAdditionalComment(user.id, episodeId, reaction, body)
+      : await one<ReflectionResult>(
+          `select reflection_id, unlocked_episode_id
+           from public.submit_episode_reflection($1, $2, $3, $4)`,
+          [user.id, episodeId, reaction, body]
+        );
 
     if (result?.reflection_id) {
       await query(`update public.reflections set moderation_status = 'approved' where id = $1`, [result.reflection_id]);
@@ -74,7 +100,7 @@ export async function submitReflection(formData: FormData) {
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not submit reflection.";
-    redirect(`${returnPath}?error=${encodeURIComponent(message)}`);
+    redirect(`${returnPath}?error=${encodeURIComponent(message)}#comments`);
   }
 
   revalidatePath(returnPath);
@@ -96,8 +122,8 @@ export async function submitReflectionReply(formData: FormData) {
   const body = String(formData.get("body") ?? "").trim();
   const user = await requireUser();
 
-  if (!body || body.length < 2) {
-    redirect(`${returnPath}?error=${encodeURIComponent("Reply with at least 2 characters.")}#comments`);
+  if (!body) {
+    redirect(`${returnPath}?error=${encodeURIComponent("Write a reply before posting.")}#comments`);
   }
 
   try {
