@@ -1,0 +1,105 @@
+@media (max-width: 760px) {
+  .reward-breakdown {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .reward-breakdown .compact-stat {
+    min-height: 92px !important;
+    padding: 11px !important;
+    border-width: 1.5px !important;
+  }
+
+  .reward-breakdown .compact-stat:nth-child(-n + 3) {
+    min-height: 122px !important;
+    padding: 13px 12px !important;
+    border-width: 2px !important;
+    background:
+      radial-gradient(circle at 100% 100%, rgba(255, 210, 26, .52), transparent 42%),
+      linear-gradient(135deg, rgba(255, 210, 26, .18), rgba(255, 254, 248, .94)) !important;
+  }
+
+  .reward-breakdown .compact-stat:nth-child(-n + 3) span {
+    display: block !important;
+    font-size: 11px !important;
+  }
+
+  .reward-breakdown .compact-stat:nth-child(-n + 3) strong {
+    font-size: clamp(36px, 13vw, 54px) !important;
+    letter-spacing: -.06em;
+  }
+
+  .reward-breakdown .compact-stat:nth-child(-n + 3) small {
+    font-size: 12px !important;
+  }
+
+  .table-panel {
+    border-width: 2px;
+  }
+
+  .table-panel > summary {
+    min-height: 72px;
+    grid-template-columns: minmax(0, 1fr) auto 20px;
+    padding: 12px;
+    background:
+      linear-gradient(90deg, rgba(255, 210, 26, .5), transparent 56%),
+      rgba(255, 254, 248, .96);
+  }
+
+  .table-panel > summary span {
+    display: block !important;
+    font-size: 10px !important;
+  }
+
+  .table-panel > summary strong {
+    font-size: 18px !important;
+    line-height: 1.03;
+    white-space: normal;
+  }
+
+  .table-panel > summary em {
+    font-size: 12px !important;
+  }
+
+  .table-panel > .table-wrap {
+    margin: 12px !important;
+  }
+
+  .table-panel .analytics-table {
+    min-width: 960px !important;
+  }
+
+  .table-panel .analytics-table th,
+  .table-panel .analytics-table td {
+    padding: 10px 11px !important;
+    font-size: 13px !important;
+  }
+
+  .table-panel .analytics-table th {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 460px) {
+  .reward-breakdown {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .reward-breakdown .compact-stat {
+    min-height: 88px !important;
+    padding: 10px !important;
+  }
+
+  .reward-breakdown .compact-stat:nth-child(-n + 3) {
+    min-height: 112px !important;
+    padding: 11px 10px !important;
+  }
+
+  .reward-breakdown .compact-stat:nth-child(-n + 3) strong {
+    font-size: clamp(32px, 12vw, 46px) !important;
+  }
+
+  .reward-breakdown .compact-stat small {
+    font-size: 10px !important;
+  }
+}
