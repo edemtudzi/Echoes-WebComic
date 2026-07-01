@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { one } from "@/lib/db";
+import { one, query } from "@/lib/db";
 
 type ReflectionResult = {
   reflection_id: string;
@@ -35,9 +35,15 @@ async function getEpisodePath(episodeId: string) {
   return `/comics/${route.comic_slug}/season/${route.season_number}/episode/${route.episode_number}`;
 }
 
+function asRating(value: FormDataEntryValue | null) {
+  const rating = Number(value);
+  return Number.isInteger(rating) && rating >= 1 && rating <= 5 ? rating : null;
+}
+
 export async function submitReflection(formData: FormData) {
   const episodeId = String(formData.get("episodeId") ?? "");
   const reaction = String(formData.get("reaction") ?? "");
+  const rating = asRating(formData.get("rating"));
   const body = String(formData.get("body") ?? "");
   const returnPath = String(formData.get("returnPath") ?? "/library");
   const user = await requireUser();
@@ -50,6 +56,14 @@ export async function submitReflection(formData: FormData) {
       [user.id, episodeId, reaction, body]
     );
 
+    if (rating && result?.reflection_id) {
+      try {
+        await query(`update public.reflections set rating = $1 where id = $2`, [rating, result.reflection_id]);
+      } catch {
+        // The rating migration may not be applied yet. Reflection submission should still succeed.
+      }
+    }
+
     if (result?.unlocked_episode_id) {
       nextEpisodePath = await getEpisodePath(result.unlocked_episode_id);
     }
@@ -59,6 +73,7 @@ export async function submitReflection(formData: FormData) {
   }
 
   revalidatePath(returnPath);
+  revalidatePath("/progress");
 
   if (nextEpisodePath) {
     revalidatePath(nextEpisodePath);
