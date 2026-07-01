@@ -10,7 +10,18 @@ import { HeaderNav } from "@/app/header-nav";
 
 export const metadata: Metadata = {
   title: "Echoes of the Source",
-  description: "A cinematic web-comic platform."
+  description: "A cinematic web-comic platform.",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/apple-touch-icon.svg"
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Echoes",
+    statusBarStyle: "default"
+  }
 };
 
 export default async function RootLayout({
