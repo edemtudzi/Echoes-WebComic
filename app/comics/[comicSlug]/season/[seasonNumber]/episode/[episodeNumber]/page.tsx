@@ -52,17 +52,31 @@ export default async function EpisodePage({
     notFound();
   }
 
-  const isFirstEpisode = episode.episode_number === 1 && season.season_number === 1;
-  const unlock = await one<{ id: string }>(
-    `select id
-     from public.unlocks
-     where user_id = $1
-       and unlockable_type = 'episode'
-       and unlockable_id = $2`,
-    [user.id, episode.id]
+  const seasonEpisodes = await query<{
+    id: string;
+    episode_number: number;
+    title: string;
+    synopsis: string;
+    status: string;
+  }>(
+    `select id, episode_number, title, synopsis, status
+     from public.episodes
+     where season_id = $1
+     order by episode_number asc`,
+    [season.id]
   );
 
-  const canRead = isFirstEpisode || Boolean(unlock);
+  const unlocks = await query<{ unlockable_id: string }>(
+    `select unlockable_id
+     from public.unlocks
+     where user_id = $1 and unlockable_type = 'episode'`,
+    [user.id]
+  );
+
+  const unlockedIds = new Set(unlocks.map((unlock) => unlock.unlockable_id));
+  const isFirstEpisode = episode.episode_number === 1 && season.season_number === 1;
+  const unlock = unlockedIds.has(episode.id);
+  const canRead = isFirstEpisode || unlock;
   const returnPath = `/comics/${comic.slug}/season/${season.season_number}/episode/${episode.episode_number}`;
 
   if (canRead) {
@@ -106,14 +120,43 @@ export default async function EpisodePage({
 
   return (
     <main className="view episode-reader-view">
-      <section className="section-head">
+      <section className="section-head episode-head">
         <div>
           <div className="eyebrow">{comic.title} / {season.title}</div>
           <h2>Episode {episode.episode_number} — {episode.title}</h2>
         </div>
-        <Link className="button-secondary" href={`/comics/${comic.slug}/season/${season.season_number}`}>
-          Episode List
-        </Link>
+        <details className="episode-list-drawer">
+          <summary className="button-secondary">Episode List</summary>
+          <aside className="episode-list-panel" aria-label="Episode list">
+            <div className="episode-list-header">
+              <div>
+                <div className="eyebrow">Season {season.season_number}</div>
+                <h3>{season.title}</h3>
+              </div>
+              <span>{seasonEpisodes.length} episode(s)</span>
+            </div>
+            <div className="episode-list-items">
+              {seasonEpisodes.map((item) => {
+                const itemIsFirst = item.episode_number === 1 && season.season_number === 1;
+                const itemUnlocked = itemIsFirst || unlockedIds.has(item.id);
+                const itemCurrent = item.id === episode.id;
+                const itemPath = `/comics/${comic.slug}/season/${season.season_number}/episode/${item.episode_number}`;
+
+                return itemUnlocked ? (
+                  <Link className={`episode-list-item${itemCurrent ? " current" : ""}`} href={itemPath} key={item.id}>
+                    <strong>Episode {item.episode_number} — {item.title}</strong>
+                    <small>{itemCurrent ? "Now reading" : "Open episode"}</small>
+                  </Link>
+                ) : (
+                  <div className="episode-list-item locked" key={item.id}>
+                    <strong>Episode {item.episode_number} — {item.title}</strong>
+                    <small>Locked</small>
+                  </div>
+                );
+              })}
+            </div>
+          </aside>
+        </details>
       </section>
 
       {notices.error ? <p className="warning">{notices.error}</p> : null}
@@ -164,6 +207,101 @@ export default async function EpisodePage({
       <style>{`
         .episode-reader-view {
           width: min(1480px, calc(100% - 32px));
+        }
+
+        .episode-head {
+          overflow: visible;
+        }
+
+        .episode-list-drawer {
+          position: relative;
+          z-index: 30;
+        }
+
+        .episode-list-drawer summary {
+          list-style: none;
+        }
+
+        .episode-list-drawer summary::-webkit-details-marker {
+          display: none;
+        }
+
+        .episode-list-panel {
+          position: absolute;
+          top: calc(100% + 14px);
+          right: 0;
+          width: min(390px, calc(100vw - 32px));
+          max-height: min(68vh, 620px);
+          overflow: auto;
+          padding: 16px;
+          border: 1.5px solid rgba(9, 9, 9, .16);
+          border-radius: 28px;
+          background: rgba(255, 254, 248, .96);
+          box-shadow: 0 24px 70px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .86);
+          backdrop-filter: blur(22px);
+        }
+
+        .episode-list-header {
+          display: flex;
+          align-items: start;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 14px;
+        }
+
+        .episode-list-header h3 {
+          margin: 0;
+        }
+
+        .episode-list-header span {
+          white-space: nowrap;
+          color: var(--ink);
+          border: 1px solid rgba(9, 9, 9, .58);
+          border-radius: 999px;
+          background: var(--yellow-soft);
+          padding: 7px 10px;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .episode-list-items {
+          display: grid;
+          gap: 10px;
+        }
+
+        .episode-list-item {
+          display: grid;
+          gap: 6px;
+          padding: 14px;
+          border: 1px solid rgba(9, 9, 9, .12);
+          border-radius: 20px;
+          background: rgba(247, 245, 235, .82);
+          transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+        }
+
+        .episode-list-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 24px rgba(0, 0, 0, .10);
+        }
+
+        .episode-list-item.current {
+          background: var(--yellow-soft);
+          border-color: rgba(9, 9, 9, .36);
+        }
+
+        .episode-list-item.locked {
+          opacity: .62;
+        }
+
+        .episode-list-item strong {
+          line-height: 1.15;
+        }
+
+        .episode-list-item small {
+          color: var(--muted);
+          font-weight: 850;
+          text-transform: uppercase;
+          letter-spacing: .08em;
         }
 
         .expanded-reader {
@@ -237,6 +375,15 @@ export default async function EpisodePage({
         @media (max-width: 640px) {
           .episode-reader-view {
             width: min(100% - 18px, 1480px);
+          }
+
+          .episode-list-panel {
+            position: fixed;
+            left: 10px;
+            right: 10px;
+            top: 132px;
+            width: auto;
+            max-height: calc(100vh - 152px);
           }
 
           .reader-meta-strip {
