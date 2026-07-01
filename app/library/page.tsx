@@ -17,32 +17,25 @@ export default async function LibraryPage() {
      order by sort_order asc, created_at asc`
   );
 
-  const featuredComic = comics.find((comic) => comic.slug === "echoes-of-the-source") ?? comics[0];
+  const featuredComic = comics[0];
 
   return (
     <main className="view library-view">
       <section className="library-hero">
         <div className="library-copy">
-          <div className="library-kicker">Featured Original</div>
-          <h1>Echoes of the Source</h1>
+          <div className="library-kicker">Original Series Library</div>
+          <h1>Choose your next story.</h1>
           <p className="lead">
-            A cinematic web-comic about Light, separation, corruption, sacrifice, and the invitation to return.
+            Read cinematic web-comic series, submit reflections, and unlock the next part of each journey as the library grows.
           </p>
-          <div className="library-actions">
-            {featuredComic ? (
-              <Link className="button" href={`/comics/${featuredComic.slug}`}>
-                Start Reading
-              </Link>
-            ) : null}
-            <p className="library-note">Read the episode, leave a real reflection, then unlock what comes next.</p>
-          </div>
+          <p className="library-note">Every published series appears here. New worlds can be added from the admin upload channel.</p>
         </div>
 
         <div className="feature-poster-card" aria-hidden="true">
-          <div className="poster-image echoes-poster">
+          <div className="poster-image library-poster">
             <div className="poster-caption">
-              <span>Season 1</span>
-              <h2>The Glow We Lost</h2>
+              <span>{comics.length} published series</span>
+              <h2>{featuredComic ? "Now Streaming" : "Series Coming Soon"}</h2>
             </div>
           </div>
         </div>
@@ -51,9 +44,9 @@ export default async function LibraryPage() {
       <section className="library-section-title">
         <div>
           <div className="eyebrow">Comic Library</div>
-          <h2>Choose your story.</h2>
+          <h2>Available stories.</h2>
         </div>
-        <p>The pilot should feel premium before we expand the library. No more placeholder-looking cards.</p>
+        <p>Select any story card to open its seasons and episodes.</p>
       </section>
 
       <section className="library-grid">
@@ -61,26 +54,25 @@ export default async function LibraryPage() {
           const isEchoes = comic.slug === "echoes-of-the-source";
 
           return (
-            <article className="comic-tile" key={comic.id}>
-              <div className={`poster-frame ${isEchoes ? "echoes-poster" : "comic-poster-fallback"}`} aria-hidden="true">
-                <div className="poster-label">
-                  <strong>{comic.title}</strong>
-                  <span>{comic.subtitle ?? "Original Web-Comic"}</span>
+            <Link className="comic-tile clickable-card" href={`/comics/${comic.slug}`} key={comic.id}>
+              <article>
+                <div className={`poster-frame ${isEchoes ? "echoes-poster" : "comic-poster-fallback"}`} aria-hidden="true">
+                  <div className="poster-label">
+                    <strong>{comic.title}</strong>
+                    <span>{comic.subtitle ?? "Original Web-Comic"}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="comic-info">
-                <h3>{comic.title}</h3>
-                <p className="hint">{comic.subtitle}</p>
-                <p>{comic.description}</p>
-                <div className="tag-row">
-                  <span className="tag">Cinematic</span>
-                  <span className="tag">Allegory</span>
+                <div className="comic-info">
+                  <h3>{comic.title}</h3>
+                  <p className="hint">{comic.subtitle ?? "Original Web-Comic"}</p>
+                  <p>{comic.description}</p>
+                  <div className="tag-row">
+                    <span className="tag">Series</span>
+                    <span className="tag">Reflection Unlocks</span>
+                  </div>
                 </div>
-                <Link className="button" href={`/comics/${comic.slug}`}>
-                  Open Comic
-                </Link>
-              </div>
-            </article>
+              </article>
+            </Link>
           );
         })}
       </section>
