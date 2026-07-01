@@ -57,21 +57,22 @@ export default async function ComicPage({
       <section className="stack">
         {seasons.map((season) => {
           const locked = season.status === "locked";
-
-          return (
-            <article className="row-card" key={season.id}>
-              <h3>{season.title}</h3>
+          const content = (
+            <>
+              <h3>Season {season.season_number} — {season.title}</h3>
               <p>{season.description}</p>
-              {locked ? (
-                <button className="button-small" disabled>
-                  Locked
-                </button>
-              ) : (
-                <Link className="button" href={`/comics/${comic.slug}/season/${season.season_number}`}>
-                  Open Season
-                </Link>
-              )}
+              <p className="hint">{locked ? "Locked" : "Tap anywhere to open"}</p>
+            </>
+          );
+
+          return locked ? (
+            <article className="row-card locked-card" key={season.id}>
+              {content}
             </article>
+          ) : (
+            <Link className="row-card clickable-card" href={`/comics/${comic.slug}/season/${season.season_number}`} key={season.id}>
+              <article>{content}</article>
+            </Link>
           );
         })}
       </section>
