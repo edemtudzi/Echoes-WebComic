@@ -1,0 +1,349 @@
+.topbar {
+  top: 10px;
+  width: min(1240px, calc(100% - 24px));
+  min-height: 58px;
+  margin-top: 10px;
+  padding: 8px 10px 8px 14px;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 42px;
+  height: 42px;
+}
+
+.brand {
+  gap: 9px;
+}
+
+.brand strong {
+  font-size: 14px;
+}
+
+.brand span {
+  font-size: 11px;
+}
+
+.nav {
+  gap: 6px;
+}
+
+.view {
+  width: min(1240px, calc(100% - 24px));
+  padding-top: clamp(18px, 3vw, 34px);
+  padding-bottom: clamp(36px, 5vw, 62px);
+}
+
+.section-head {
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: clamp(16px, 2.4vw, 24px);
+  border-radius: 28px;
+}
+
+.section-head h2 {
+  margin-bottom: 6px;
+  font-size: clamp(28px, 3.8vw, 46px);
+}
+
+.section-head p,
+.lead,
+p {
+  line-height: 1.45;
+}
+
+h3 {
+  font-size: 19px;
+}
+
+.button,
+.button-secondary {
+  min-height: 40px;
+  padding-inline: 17px;
+  font-size: 14px;
+}
+
+.button-small {
+  min-height: 34px;
+  padding-inline: 13px;
+  font-size: 13px;
+}
+
+.actions {
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.grid,
+.stack,
+.library-grid,
+.analytics-grid,
+.metric-grid,
+.admin-grid,
+.dashboard-grid,
+.progress-grid,
+.reward-grid,
+.upload-grid {
+  gap: 14px;
+}
+
+.card-body,
+.row-card,
+.metric-card,
+.analytics-panel,
+.reward-panel,
+.reward-score-card,
+.activity-item,
+.upload-channel,
+.status-grid div {
+  padding: 14px;
+  border-radius: 22px;
+}
+
+.card,
+.form-card,
+.comic-page,
+.placeholder-page,
+.analytics-panel,
+.metric-card,
+.reward-panel,
+.reward-score-card {
+  border-radius: 28px;
+}
+
+.form-card {
+  padding: clamp(16px, 2.3vw, 24px);
+}
+
+.form-card::before {
+  width: 170px;
+  height: 170px;
+  right: -64px;
+  bottom: -76px;
+}
+
+.field {
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.field label {
+  font-size: 12px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  border-radius: 18px;
+  padding: 10px 12px;
+}
+
+.field textarea {
+  min-height: 88px;
+}
+
+.hint,
+.eyebrow,
+.tag {
+  font-size: 11px;
+}
+
+.tag-row {
+  gap: 6px;
+  margin: 9px 0 12px;
+}
+
+.tag {
+  padding: 5px 8px;
+}
+
+.cover {
+  min-height: 220px;
+}
+
+.library-view .section-head,
+.admin-dashboard .section-head,
+.compact-head {
+  margin-bottom: 14px;
+}
+
+.form-section {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(9, 9, 9, .12);
+  border-radius: 24px;
+  background: rgba(255, 254, 248, .62);
+}
+
+.form-section + .form-section {
+  margin-top: 14px;
+}
+
+.form-section-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.form-section-head h3 {
+  margin-bottom: 0;
+}
+
+.compact-fields {
+  display: grid;
+  gap: 10px 12px;
+}
+
+.two-column-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.three-column-fields {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+.field-check {
+  align-self: end;
+}
+
+.field-check label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: var(--ink);
+  border: 1.5px solid rgba(9, 9, 9, .18);
+  border-radius: 18px;
+  background: rgba(255, 254, 248, .8);
+  cursor: pointer;
+}
+
+.field-check input {
+  width: auto;
+  box-shadow: none;
+}
+
+.starter-upload-section {
+  background:
+    linear-gradient(135deg, rgba(255, 210, 26, .26), transparent 32%),
+    rgba(255, 254, 248, .68);
+}
+
+.analytics-table th,
+.analytics-table td {
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+.analytics-panel h3,
+.metric-card h3,
+.reward-panel h3 {
+  margin-bottom: 6px;
+}
+
+.metric-card strong,
+.reward-score-card strong {
+  font-size: clamp(24px, 3vw, 36px);
+}
+
+.chart-shell,
+.vertical-chart,
+.funnel-chart,
+.wide-bar {
+  min-height: auto;
+}
+
+.vertical-chart {
+  gap: 8px;
+}
+
+.wide-bar {
+  padding: 8px 10px;
+}
+
+.activity-list,
+.recent-list {
+  gap: 8px;
+}
+
+.comic-page {
+  gap: 10px;
+  padding: clamp(12px, 2vw, 18px);
+}
+
+.page-image,
+.placeholder-page {
+  border-radius: 22px;
+}
+
+.reflection-card {
+  gap: 10px !important;
+}
+
+.reflection-head span {
+  padding: 6px 10px !important;
+}
+
+.rating-option {
+  min-height: 50px !important;
+  border-radius: 15px !important;
+}
+
+.reaction-option {
+  min-height: 42px !important;
+  padding: 7px 9px !important;
+}
+
+@media (max-width: 980px) {
+  .three-column-fields,
+  .two-column-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    width: min(100% - 18px, 1240px);
+    border-radius: 26px;
+    padding: 10px;
+  }
+
+  .view {
+    width: min(100% - 18px, 1240px);
+    padding-top: 14px;
+  }
+
+  .section-head,
+  .form-card,
+  .card,
+  .comic-page,
+  .analytics-panel,
+  .metric-card {
+    border-radius: 22px;
+  }
+
+  .section-head,
+  .form-card,
+  .form-section {
+    padding: 14px;
+  }
+
+  .three-column-fields,
+  .two-column-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section-head,
+  .section-head {
+    align-items: start;
+    flex-direction: column;
+  }
+}
