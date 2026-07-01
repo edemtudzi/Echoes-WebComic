@@ -20,6 +20,36 @@ function hasUpload(file: FormDataEntryValue | null): file is File {
   return file instanceof File && file.size > 0;
 }
 
+async function uploadPageImage({
+  formData,
+  comicSlug,
+  seasonNumber,
+  episodeNumber,
+  pageNumber,
+  imageKey = "image",
+  suffix = ""
+}: {
+  formData: FormData;
+  comicSlug: string;
+  seasonNumber: number;
+  episodeNumber: number;
+  pageNumber: number;
+  imageKey?: string;
+  suffix?: string;
+}) {
+  const file = formData.get(imageKey);
+
+  if (!hasUpload(file)) {
+    return null;
+  }
+
+  const baseName = safeFileName(file.name).replace(/\.[^.]+$/, "");
+  const variant = suffix ? `${suffix}-` : "";
+  const publicId = `${comicSlug}/season-${seasonNumber}/episode-${episodeNumber}/page-${String(pageNumber).padStart(3, "0")}-${variant}${baseName}-${crypto.randomUUID()}`;
+
+  return uploadImageToCloudinary(publicId, file);
+}
+
 async function uploadPageFromForm({
   formData,
   episodeId,
@@ -37,15 +67,11 @@ async function uploadPageFromForm({
   pageNumber: number;
   imageKey?: string;
 }) {
-  const file = formData.get(imageKey);
+  const upload = await uploadPageImage({ formData, comicSlug, seasonNumber, episodeNumber, pageNumber, imageKey });
 
-  if (!hasUpload(file)) {
+  if (!upload) {
     return;
   }
-
-  const baseName = safeFileName(file.name).replace(/\.[^.]+$/, "");
-  const publicId = `${comicSlug}/season-${seasonNumber}/episode-${episodeNumber}/page-${String(pageNumber).padStart(3, "0")}-${baseName}-${crypto.randomUUID()}`;
-  const upload = await uploadImageToCloudinary(publicId, file);
 
   await query(
     `insert into public.pages (episode_id, page_number, image_path, alt_text, caption, status)
@@ -263,6 +289,53 @@ export async function uploadEpisodePage(formData: FormData) {
   }
 
   revalidatePath(`/admin/episodes/${episodeId}/pages`);
+  redirect(`/admin/episodes/${episodeId}/pages?saved=1`);
+}
+
+export async function replaceEpisodePageImage(formData: FormData) {
+  await requireAdmin();
+  const episodeId = asText(formData, "episodeId");
+  const pageId = asText(formData, "pageId");
+  const comicSlug = slugify(asText(formData, "comicSlug") || "comic");
+  const seasonNumber = asNumber(formData, "seasonNumber", 1);
+  const episodeNumber = asNumber(formData, "episodeNumber", 1);
+  const pageNumber = asNumber(formData, "pageNumber", 1);
+  const file = formData.get("replacementImage");
+
+  if (!hasUpload(file)) {
+    redirect(`/admin/episodes/${episodeId}/pages?error=${encodeURIComponent("Choose a replacement image.")}`);
+  }
+
+  try {
+    const upload = await uploadPageImage({
+      formData,
+      comicSlug,
+      seasonNumber,
+      episodeNumber,
+      pageNumber,
+      imageKey: "replacementImage",
+      suffix: "replacement"
+    });
+
+    if (!upload) {
+      throw new Error("Choose a replacement image.");
+    }
+
+    await query(
+      `update public.pages
+       set image_path = $1,
+           alt_text = coalesce(nullif($2, ''), alt_text),
+           caption = case when $3 = '' then caption else $3 end
+       where id = $4 and episode_id = $5`,
+      [upload.secure_url, asText(formData, "alt_text"), asText(formData, "caption"), pageId, episodeId]
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not replace page image.";
+    redirect(`/admin/episodes/${episodeId}/pages?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath(`/admin/episodes/${episodeId}/pages`);
+  revalidatePath("/admin");
   redirect(`/admin/episodes/${episodeId}/pages?saved=1`);
 }
 
