@@ -45,15 +45,6 @@ async function allowMultipleEpisodeComments() {
   await query(`alter table public.reflections drop constraint if exists reflections_user_id_episode_id_key`);
 }
 
-async function saveAdditionalComment(userId: string, episodeId: string, reaction: string, body: string) {
-  return one<ReflectionResult>(
-    `insert into public.reflections (user_id, episode_id, reaction, body, moderation_status)
-     values ($1, $2, $3, $4, 'approved')
-     returning id::text as reflection_id, null::text as unlocked_episode_id`,
-    [userId, episodeId, reaction, body]
-  );
-}
-
 export async function submitReflection(formData: FormData) {
   const episodeId = String(formData.get("episodeId") ?? "");
   const reaction = String(formData.get("reaction") ?? "");
@@ -70,18 +61,11 @@ export async function submitReflection(formData: FormData) {
   try {
     await allowMultipleEpisodeComments();
 
-    const existingComment = await one<{ id: string }>(
-      `select id from public.reflections where user_id = $1 and episode_id = $2 limit 1`,
-      [user.id, episodeId]
+    const result = await one<ReflectionResult>(
+      `select reflection_id, unlocked_episode_id
+       from public.submit_episode_reflection($1, $2, $3, $4)`,
+      [user.id, episodeId, reaction, body]
     );
-
-    const result = existingComment
-      ? await saveAdditionalComment(user.id, episodeId, reaction, body)
-      : await one<ReflectionResult>(
-          `select reflection_id, unlocked_episode_id
-           from public.submit_episode_reflection($1, $2, $3, $4)`,
-          [user.id, episodeId, reaction, body]
-        );
 
     if (result?.reflection_id) {
       await query(`update public.reflections set moderation_status = 'approved' where id = $1`, [result.reflection_id]);
