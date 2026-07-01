@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updatePageStatus, uploadEpisodePage } from "@/app/actions/admin";
+import { replaceEpisodePageImage, updatePageStatus, uploadEpisodePage } from "@/app/actions/admin";
 import { requireAdmin } from "@/lib/auth";
 import { one, query } from "@/lib/db";
 
@@ -136,23 +136,56 @@ export default async function EpisodePagesAdminPage({
 
           {pageRows.length ? (
             pageRows.map((page) => (
-              <article className="row-card" key={page.id}>
-                <h3>Page {page.page_number}</h3>
-                <p className="hint">{page.status} / {page.image_path}</p>
+              <article className="row-card page-admin-card" key={page.id}>
+                <div className="page-admin-head">
+                  <div>
+                    <div className="eyebrow">Uploaded page</div>
+                    <h3>Page {page.page_number}</h3>
+                  </div>
+                  <span className="tag">{page.status}</span>
+                </div>
+                <p className="hint page-path">{page.image_path}</p>
                 <img className="page-image" src={page.imageUrl ?? ""} alt={page.alt_text || `Page ${page.page_number}`} style={{ minHeight: 260, maxHeight: 520 }} />
                 {page.caption ? <p>{page.caption}</p> : null}
-                <form action={updatePageStatus} className="actions">
-                  <input type="hidden" name="episodeId" value={episode.id} />
-                  <input type="hidden" name="pageId" value={page.id} />
-                  <select name="status" defaultValue={page.status} aria-label={`Status for page ${page.page_number}`}>
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="hidden">Hidden</option>
-                  </select>
-                  <button className="button-small" type="submit">
-                    Update Status
-                  </button>
-                </form>
+
+                <div className="page-admin-actions">
+                  <form action={updatePageStatus} className="actions page-status-form">
+                    <input type="hidden" name="episodeId" value={episode.id} />
+                    <input type="hidden" name="pageId" value={page.id} />
+                    <select name="status" defaultValue={page.status} aria-label={`Status for page ${page.page_number}`}>
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                      <option value="hidden">Hidden</option>
+                    </select>
+                    <button className="button-small" type="submit">
+                      Update Status
+                    </button>
+                  </form>
+
+                  <form action={replaceEpisodePageImage} className="replace-page-form">
+                    <input type="hidden" name="episodeId" value={episode.id} />
+                    <input type="hidden" name="pageId" value={page.id} />
+                    <input type="hidden" name="comicSlug" value={episode.comic_slug} />
+                    <input type="hidden" name="seasonNumber" value={episode.season_number} />
+                    <input type="hidden" name="episodeNumber" value={episode.episode_number} />
+                    <input type="hidden" name="pageNumber" value={page.page_number} />
+                    <div className="field">
+                      <label htmlFor={`replacement-${page.id}`}>Replace image</label>
+                      <input id={`replacement-${page.id}`} name="replacementImage" type="file" accept="image/png,image/jpeg,image/webp" required />
+                    </div>
+                    <div className="field">
+                      <label htmlFor={`alt-${page.id}`}>Alt text</label>
+                      <input id={`alt-${page.id}`} name="alt_text" defaultValue={page.alt_text} />
+                    </div>
+                    <div className="field field-wide">
+                      <label htmlFor={`caption-${page.id}`}>Caption</label>
+                      <textarea id={`caption-${page.id}`} name="caption" defaultValue={page.caption ?? ""} />
+                    </div>
+                    <button className="button-small" type="submit">
+                      Replace Page Image
+                    </button>
+                  </form>
+                </div>
               </article>
             ))
           ) : (
@@ -166,6 +199,9 @@ export default async function EpisodePagesAdminPage({
           )}
         </div>
       </section>
+      <style>{`
+        .page-admin-card{display:grid;gap:12px}.page-admin-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.page-admin-head h3{margin-bottom:0}.page-path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.page-admin-actions{display:grid;gap:10px}.page-status-form{margin-top:0}.replace-page-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end;padding:12px;border:1px solid rgba(9,9,9,.12);border-radius:18px;background:rgba(255,254,248,.68)}.replace-page-form .field{margin-top:0}.replace-page-form textarea{min-height:64px}.replace-page-form button{justify-self:start}.field-wide{grid-column:1/-1}@media(max-width:760px){.replace-page-form{grid-template-columns:1fr}.page-admin-head{align-items:start}.page-path{white-space:normal;word-break:break-word}}
+      `}</style>
     </main>
   );
 }
