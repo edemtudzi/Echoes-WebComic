@@ -1,0 +1,388 @@
+/* Final dashboard density pass for Admin and Progress. */
+.admin-dashboard,
+.rewards-view {
+  gap: 12px !important;
+  width: min(1320px, calc(100% - 20px));
+  padding-top: clamp(76px, 7vw, 96px) !important;
+  padding-bottom: 34px !important;
+}
+
+.admin-dashboard .section-head,
+.rewards-view .section-head {
+  min-height: auto;
+  margin: 0 0 10px !important;
+  padding: 14px 16px !important;
+  border-radius: 22px !important;
+}
+
+.admin-dashboard .section-head h2,
+.rewards-view .section-head h2 {
+  margin-bottom: 4px;
+  font-size: clamp(24px, 3vw, 38px) !important;
+  line-height: .96;
+}
+
+.admin-dashboard .section-head p,
+.rewards-view .section-head p {
+  max-width: 720px;
+  margin-bottom: 0;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.admin-dashboard .actions,
+.rewards-view .actions {
+  gap: 7px !important;
+  margin-top: 10px !important;
+}
+
+.admin-dashboard .button,
+.admin-dashboard .button-secondary,
+.rewards-view .button,
+.rewards-view .button-secondary {
+  min-height: 36px !important;
+  padding-inline: 14px !important;
+  font-size: 13px !important;
+}
+
+.admin-dashboard .upload-channel,
+.admin-dashboard .metric-grid,
+.admin-dashboard .analytics-grid,
+.rewards-view .reward-hero,
+.rewards-view .rewards-grid,
+.rewards-view .stack {
+  gap: 10px !important;
+}
+
+.admin-dashboard .metric-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+}
+
+.admin-dashboard .analytics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.admin-dashboard .metric-card,
+.admin-dashboard .analytics-panel,
+.admin-dashboard .upload-panel,
+.rewards-view .reward-score-card,
+.rewards-view .reward-breakdown,
+.rewards-view .reward-panel,
+.rewards-view .row-card {
+  border-radius: 18px !important;
+  padding: 12px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .09) !important;
+}
+
+.admin-dashboard .metric-card {
+  min-height: 106px !important;
+}
+
+.admin-dashboard .metric-card::after {
+  width: 82px !important;
+  height: 82px !important;
+  right: -28px !important;
+  bottom: -34px !important;
+}
+
+.admin-dashboard .metric-card strong,
+.rewards-view .reward-score-card strong {
+  margin-top: 6px !important;
+  font-size: clamp(22px, 2.5vw, 34px) !important;
+  line-height: .92 !important;
+}
+
+.admin-dashboard .metric-card p,
+.admin-dashboard .activity-item p,
+.admin-dashboard .upload-panel p,
+.rewards-view .reward-score-card p,
+.rewards-view .badge-card p,
+.rewards-view .merch-card p,
+.rewards-view .row-card p {
+  margin-top: 6px !important;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.admin-dashboard .analytics-panel h3,
+.rewards-view .reward-panel h3,
+.rewards-view .reward-score-card h3,
+.rewards-view .row-card h3 {
+  margin-bottom: 8px !important;
+  font-size: 17px !important;
+}
+
+.admin-dashboard .vertical-chart {
+  height: 168px !important;
+  gap: 7px !important;
+  padding: 9px !important;
+  border-radius: 16px !important;
+}
+
+.admin-dashboard .day-bars {
+  gap: 5px !important;
+}
+
+.admin-dashboard .bars {
+  gap: 3px !important;
+}
+
+.admin-dashboard .bars i {
+  width: 7px !important;
+}
+
+.admin-dashboard .legend {
+  margin-top: 8px !important;
+  gap: 9px !important;
+  font-size: 11px !important;
+}
+
+.admin-dashboard .wide-bars,
+.admin-dashboard .bar-list,
+.admin-dashboard .activity-list,
+.admin-dashboard .status-grid,
+.rewards-view .badge-grid,
+.rewards-view .merch-list {
+  gap: 8px !important;
+  margin-top: 10px !important;
+}
+
+.admin-dashboard .wide-bar,
+.admin-dashboard .activity-item,
+.admin-dashboard .status-grid div,
+.rewards-view .badge-card,
+.rewards-view .merch-card {
+  border-radius: 14px !important;
+  padding: 10px !important;
+}
+
+.admin-dashboard .wide-bar {
+  gap: 6px !important;
+}
+
+.admin-dashboard .wide-bar i {
+  height: 9px !important;
+}
+
+.admin-dashboard .bar-row {
+  gap: 6px !important;
+}
+
+.admin-dashboard .bar-row i {
+  height: 8px !important;
+}
+
+.admin-dashboard .status-grid strong,
+.admin-dashboard .bar-row strong,
+.admin-dashboard .wide-bar strong,
+.rewards-view .reward-breakdown strong {
+  margin-top: 4px !important;
+  font-size: 23px !important;
+}
+
+.admin-dashboard .metric-card span,
+.admin-dashboard .status-grid span,
+.admin-dashboard .activity-item span,
+.admin-dashboard .wide-bar span,
+.admin-dashboard .day-bars span,
+.rewards-view .reward-breakdown span,
+.rewards-view .badge-card span,
+.rewards-view .merch-card span {
+  font-size: 10px !important;
+  letter-spacing: .07em !important;
+}
+
+.admin-dashboard .status-grid small,
+.admin-dashboard .activity-item small,
+.rewards-view .reward-breakdown small {
+  margin-top: 5px !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+.admin-dashboard .table-wrap {
+  border-radius: 16px !important;
+}
+
+.admin-dashboard .analytics-table {
+  min-width: 780px !important;
+}
+
+.admin-dashboard .analytics-table th,
+.admin-dashboard .analytics-table td {
+  padding: 7px 8px !important;
+  font-size: 12px !important;
+}
+
+.admin-dashboard .analytics-table th,
+.rewards-view .eyebrow,
+.admin-dashboard .eyebrow {
+  font-size: 10px !important;
+  letter-spacing: .1em !important;
+}
+
+.admin-dashboard .analytics-table td span {
+  margin-top: 2px !important;
+  font-size: 11px !important;
+}
+
+.rewards-view .reward-hero {
+  grid-template-columns: minmax(220px, .62fr) minmax(0, 1.38fr) !important;
+}
+
+.rewards-view .rewards-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.rewards-view .reward-breakdown {
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+}
+
+.rewards-view .reward-breakdown div {
+  padding: 10px !important;
+}
+
+.rewards-view .level-track {
+  height: 10px !important;
+}
+
+.rewards-view .badge-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.rewards-view .badge-card strong,
+.rewards-view .merch-card strong {
+  margin-top: 5px !important;
+  font-size: 14px !important;
+  line-height: 1.15 !important;
+}
+
+.rewards-view .row-card {
+  display: grid;
+  gap: 3px !important;
+}
+
+@media (max-width: 1120px) {
+  .admin-dashboard .metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .rewards-view .reward-breakdown {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .rewards-view .badge-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-dashboard,
+  .rewards-view {
+    width: min(100% - 16px, 1320px) !important;
+    gap: 9px !important;
+    padding-top: 82px !important;
+    padding-bottom: 24px !important;
+  }
+
+  .admin-dashboard .section-head,
+  .rewards-view .section-head {
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .admin-dashboard .section-head h2,
+  .rewards-view .section-head h2 {
+    font-size: clamp(22px, 8vw, 32px) !important;
+  }
+
+  .admin-dashboard .section-head p,
+  .rewards-view .section-head p {
+    font-size: 12px !important;
+  }
+
+  .admin-dashboard .actions,
+  .rewards-view .actions {
+    width: 100%;
+    gap: 6px !important;
+  }
+
+  .admin-dashboard .button,
+  .admin-dashboard .button-secondary,
+  .rewards-view .button,
+  .rewards-view .button-secondary {
+    min-height: 34px !important;
+    padding-inline: 11px !important;
+    font-size: 12px !important;
+  }
+
+  .admin-dashboard .metric-grid,
+  .admin-dashboard .analytics-grid,
+  .rewards-view .reward-hero,
+  .rewards-view .rewards-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-dashboard .metric-grid {
+    gap: 8px !important;
+  }
+
+  .admin-dashboard .metric-card {
+    min-height: 82px !important;
+    padding: 10px !important;
+  }
+
+  .admin-dashboard .metric-card strong,
+  .rewards-view .reward-score-card strong {
+    font-size: clamp(24px, 9vw, 34px) !important;
+  }
+
+  .admin-dashboard .analytics-panel,
+  .admin-dashboard .upload-panel,
+  .rewards-view .reward-score-card,
+  .rewards-view .reward-breakdown,
+  .rewards-view .reward-panel,
+  .rewards-view .row-card {
+    padding: 10px !important;
+    border-radius: 16px !important;
+  }
+
+  .admin-dashboard .vertical-chart {
+    height: 132px !important;
+    padding: 7px !important;
+  }
+
+  .admin-dashboard .bars i {
+    width: 6px !important;
+  }
+
+  .admin-dashboard .bar-row div,
+  .admin-dashboard .wide-bar div {
+    flex-direction: row !important;
+    align-items: baseline !important;
+  }
+
+  .rewards-view .reward-breakdown,
+  .rewards-view .badge-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 460px) {
+  .admin-dashboard .metric-grid,
+  .rewards-view .reward-breakdown,
+  .rewards-view .badge-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-dashboard .bar-row div,
+  .admin-dashboard .wide-bar div {
+    align-items: start !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .admin-dashboard .analytics-table {
+    min-width: 700px !important;
+  }
+}
