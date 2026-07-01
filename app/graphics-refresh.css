@@ -1,0 +1,127 @@
+.library-hero {
+  min-height: 480px;
+  background:
+    linear-gradient(112deg, rgba(255, 210, 26, .98) 0 31%, transparent 31.2%),
+    radial-gradient(circle at 77% 35%, rgba(255, 210, 26, .22), transparent 28%),
+    linear-gradient(90deg, rgba(255, 254, 248, .93), rgba(255, 254, 248, .78)),
+    var(--paper);
+}
+
+.library-hero::before {
+  opacity: .2;
+  background:
+    radial-gradient(circle, rgba(9, 9, 9, .16) 0 1px, transparent 1.5px) 0 0 / 18px 18px,
+    linear-gradient(124deg, transparent 0 42%, rgba(9, 9, 9, .18) 42.2% 42.55%, transparent 42.8%),
+    linear-gradient(28deg, transparent 0 58%, rgba(9, 9, 9, .10) 58.2% 58.55%, transparent 58.8%);
+}
+
+.library-copy {
+  background: rgba(255, 254, 248, .7);
+}
+
+.feature-poster-card {
+  min-height: 458px;
+  padding: 11px;
+  background:
+    linear-gradient(145deg, rgba(255, 254, 248, .88), rgba(244, 240, 224, .72));
+  transform: rotate(.8deg);
+}
+
+.feature-poster-card::before {
+  inset: 22px -14px -14px 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 210, 26, .78), rgba(255, 226, 92, .48));
+}
+
+.poster-image {
+  min-height: 436px;
+}
+
+.library-poster {
+  background-image:
+    linear-gradient(180deg, rgba(9, 9, 9, 0) 40%, rgba(9, 9, 9, .72) 100%),
+    url("/graphics/library-showcase.svg");
+  background-position: center;
+  background-size: cover;
+}
+
+.comic-poster-fallback {
+  background-image:
+    linear-gradient(180deg, rgba(9, 9, 9, 0) 44%, rgba(9, 9, 9, .78) 100%),
+    url("/graphics/series-poster-fallback.svg");
+  background-position: center;
+  background-size: cover;
+}
+
+.library-poster::before,
+.comic-poster-fallback::before {
+  content: none;
+}
+
+.poster-image::after,
+.poster-frame::after {
+  background:
+    radial-gradient(circle at 54% 47%, rgba(255, 210, 26, .2), transparent 24%),
+    linear-gradient(180deg, transparent 54%, rgba(0, 0, 0, .56) 100%);
+}
+
+.poster-caption {
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+}
+
+.poster-caption span,
+.poster-label span {
+  border-color: rgba(255, 254, 248, .58);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .22);
+}
+
+.poster-caption h2 {
+  max-width: 92%;
+  font-size: clamp(28px, 3.7vw, 46px);
+}
+
+.poster-frame {
+  min-height: 360px;
+}
+
+.poster-label {
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+}
+
+.poster-label strong {
+  font-size: clamp(20px, 2.2vw, 28px);
+}
+
+.comic-tile {
+  border-radius: 28px;
+}
+
+.comic-info {
+  padding: 16px;
+}
+
+@media (max-width: 980px) {
+  .feature-poster-card,
+  .poster-image {
+    min-height: 390px;
+  }
+}
+
+@media (max-width: 640px) {
+  .library-hero {
+    min-height: auto;
+  }
+
+  .feature-poster-card,
+  .poster-image {
+    min-height: 340px;
+  }
+
+  .poster-frame {
+    min-height: 330px;
+  }
+}
