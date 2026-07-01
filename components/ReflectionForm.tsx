@@ -88,8 +88,7 @@ async function getPublicThread(episodeId: string) {
          from public.reflections r
          join public.app_users u on u.id = r.user_id
          where r.episode_id = $1 and r.moderation_status = 'approved'
-         order by r.created_at desc
-         limit 40`,
+         order by r.created_at desc`,
         [episodeId]
       );
     } catch {
@@ -103,8 +102,7 @@ async function getPublicThread(episodeId: string) {
          from public.reflections r
          join public.app_users u on u.id = r.user_id
          where r.episode_id = $1 and r.moderation_status = 'approved'
-         order by r.created_at desc
-         limit 40`,
+         order by r.created_at desc`,
         [episodeId]
       );
     }
@@ -181,7 +179,6 @@ export async function ReflectionForm({ episodeId, returnPath }: ReflectionFormPr
             id="body"
             name="body"
             required
-            minLength={40}
             placeholder="Example: The moment where Kael... because it made me think about..."
           />
           <span className="hint">Specific comments unlock the story and help shape future episodes.</span>
@@ -244,7 +241,7 @@ export async function ReflectionForm({ episodeId, returnPath }: ReflectionFormPr
                         <input type="hidden" name="reflectionId" value={comment.id} />
                         <input type="hidden" name="episodeId" value={episodeId} />
                         <input type="hidden" name="returnPath" value={returnPath} />
-                        <textarea name="body" required minLength={2} maxLength={500} placeholder={`Reply to ${displayName(comment.display_name)}...`} />
+                        <textarea name="body" required placeholder={`Reply to ${displayName(comment.display_name)}...`} />
                         <button className="button-small" type="submit">Post Reply</button>
                       </form>
                     </details>
