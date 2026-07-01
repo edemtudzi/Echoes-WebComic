@@ -87,7 +87,7 @@ function progressToNext(points: number) {
 }
 
 function earnedBadges(stats: CountRow) {
-  const badges = [
+  return [
     { title: "First Step", detail: "Started your first episode.", earned: num(stats.started) >= 1 },
     { title: "Episode Finisher", detail: "Completed an episode.", earned: num(stats.completed) >= 1 },
     { title: "Reflection Keeper", detail: "Submitted three reflections.", earned: num(stats.reflections) >= 3 },
@@ -95,8 +95,6 @@ function earnedBadges(stats: CountRow) {
     { title: "Trusted Voice", detail: "Earned three approved reflections.", earned: num(stats.approved_reflections) >= 3 },
     { title: "Season Climber", detail: "Completed five episodes.", earned: num(stats.completed) >= 5 }
   ];
-
-  return badges;
 }
 
 export default async function ProgressPage() {
@@ -152,24 +150,34 @@ export default async function ProgressPage() {
   const next = nextLevel(totalPoints);
   const badges = earnedBadges(stats);
   const earnedCount = badges.filter((badge) => badge.earned).length;
+  const statTiles = [
+    { label: "Started", value: stats.started, detail: "5 pts each" },
+    { label: "Completed", value: stats.completed, detail: "20 pts each" },
+    { label: "Reflections", value: stats.reflections, detail: "40 pts each" },
+    { label: "Approved", value: stats.approved_reflections, detail: "20 bonus pts" },
+    { label: "Unlocks", value: stats.unlocks, detail: "15 pts each" },
+    { label: "Badges", value: `${earnedCount}/${badges.length}`, detail: "Milestones" }
+  ];
 
   return (
-    <main className="view rewards-view">
-      <section className="section-head">
+    <main className="view rewards-view redesigned-dashboard">
+      <section className="compact-command-hero rewards-hero-copy">
         <div>
           <div className="eyebrow">Reader Progress</div>
           <h2>Your rewards path.</h2>
-          <p>Earn points by reading, completing episodes, submitting reflections, and unlocking new story chapters.</p>
+          <p>Track reading, reflections, unlocks, badges, and future merch eligibility without the long scroll.</p>
         </div>
         <Link className="button-secondary" href="/library">
           Back to Library
         </Link>
       </section>
 
-      <section className="reward-hero">
-        <article className="reward-score-card">
-          <div className="eyebrow">Current Level</div>
-          <h3>{level.name}</h3>
+      <section className="progress-overview">
+        <article className="score-panel">
+          <div>
+            <div className="eyebrow">Current Level</div>
+            <h3>{level.name}</h3>
+          </div>
           <strong>{fmt(totalPoints)} pts</strong>
           <div className="level-track" aria-label="Level progress">
             <i style={{ width: `${progressToNext(totalPoints)}%` }} />
@@ -177,21 +185,25 @@ export default async function ProgressPage() {
           <p>{next ? `${fmt(next.min - totalPoints)} points until ${next.name}.` : "Top level reached for the current reward system."}</p>
         </article>
 
-        <article className="reward-breakdown">
-          <div><span>Started</span><strong>{fmt(stats.started)}</strong><small>5 pts each</small></div>
-          <div><span>Completed</span><strong>{fmt(stats.completed)}</strong><small>20 pts each</small></div>
-          <div><span>Reflections</span><strong>{fmt(stats.reflections)}</strong><small>40 pts each</small></div>
-          <div><span>Approved</span><strong>{fmt(stats.approved_reflections)}</strong><small>20 bonus pts</small></div>
-          <div><span>Unlocks</span><strong>{fmt(stats.unlocks)}</strong><small>15 pts each</small></div>
-          <div><span>Badges</span><strong>{earnedCount}/{badges.length}</strong><small>Milestones</small></div>
+        <article className="compact-stat-grid reward-breakdown" aria-label="Reward point breakdown">
+          {statTiles.map((tile) => (
+            <div className="compact-stat" key={tile.label}>
+              <span>{tile.label}</span>
+              <strong>{typeof tile.value === "string" && tile.value.includes("/") ? tile.value : fmt(tile.value)}</strong>
+              <small>{tile.detail}</small>
+            </div>
+          ))}
         </article>
       </section>
 
-      <section className="rewards-grid">
-        <article className="reward-panel">
-          <div className="eyebrow">Badges</div>
-          <h3>Reader achievements</h3>
-          <div className="badge-grid">
+      <section className="collapsible-grid">
+        <details className="collapse-panel" open>
+          <summary>
+            <span>Badges</span>
+            <strong>Reader achievements</strong>
+            <em>{earnedCount}/{badges.length} earned</em>
+          </summary>
+          <div className="badge-grid compact-card-grid">
             {badges.map((badge) => (
               <div className={`badge-card${badge.earned ? " earned" : ""}`} key={badge.title}>
                 <span>{badge.earned ? "Unlocked" : "Locked"}</span>
@@ -200,13 +212,16 @@ export default async function ProgressPage() {
               </div>
             ))}
           </div>
-        </article>
+        </details>
 
-        <article className="reward-panel">
-          <div className="eyebrow">Merch Rewards</div>
-          <h3>Future custom merch path</h3>
-          <p className="hint">These are eligibility milestones, not instant claims. Merch should only become redeemable after production, budget, sizes, delivery rules, and fraud checks are ready.</p>
-          <div className="merch-list">
+        <details className="collapse-panel">
+          <summary>
+            <span>Merch Rewards</span>
+            <strong>Future custom merch path</strong>
+            <em>{fmt(totalPoints)} pts</em>
+          </summary>
+          <p className="hint compact-note">Eligibility milestones only. Merch becomes redeemable after production, budget, sizes, delivery rules, and fraud checks are ready.</p>
+          <div className="merch-list compact-list">
             {merchMilestones.map((milestone) => (
               <div className={`merch-card${totalPoints >= milestone.points ? " earned" : ""}`} key={milestone.title}>
                 <span>{fmt(milestone.points)} pts</span>
@@ -215,194 +230,54 @@ export default async function ProgressPage() {
               </div>
             ))}
           </div>
-        </article>
+        </details>
       </section>
 
-      <section className="section-head" style={{ marginTop: 24 }}>
-        <div>
-          <div className="eyebrow">Reading Activity</div>
-          <h2>Your unlocked path.</h2>
+      <details className="collapse-panel" open>
+        <summary>
+          <span>Reading Activity</span>
+          <strong>Your unlocked path</strong>
+          <em>{fmt(progress.length)} entries</em>
+        </summary>
+        <div className="compact-list">
+          {progress.length ? (
+            progress.map((item) => (
+              <article className="compact-row" key={item.id}>
+                <div>
+                  <strong>{item.episode_title}</strong>
+                  <span>{item.comic_title} / {item.season_title}</span>
+                </div>
+                <em>Page {item.last_page_number} / {item.completed ? "completed" : "in progress"}</em>
+              </article>
+            ))
+          ) : (
+            <p className="warning">No progress yet. Start with the library.</p>
+          )}
         </div>
-      </section>
+      </details>
 
-      <section className="stack">
-        {progress.length ? (
-          progress.map((item) => (
-            <article className="row-card" key={item.id}>
-              <h3>{item.episode_title}</h3>
-              <p className="hint">
-                {item.comic_title} / {item.season_title} / Last page: {item.last_page_number} / {item.completed ? "completed" : "in progress"}
-              </p>
-            </article>
-          ))
-        ) : (
-          <p className="warning">No progress yet. Start with the library.</p>
-        )}
-      </section>
-
-      <section className="section-head" style={{ marginTop: 40 }}>
-        <div>
-          <div className="eyebrow">Reflections</div>
-          <h2>What you submitted.</h2>
+      <details className="collapse-panel">
+        <summary>
+          <span>Reflections</span>
+          <strong>What you submitted</strong>
+          <em>{fmt(reflections.length)} total</em>
+        </summary>
+        <div className="compact-list">
+          {reflections.length ? (
+            reflections.map((reflection) => (
+              <article className="compact-row reflection-row" key={reflection.id}>
+                <div>
+                  <strong>{reflection.episode_title}</strong>
+                  <span>{reactionIcons[reflection.reaction] ?? "Reaction"} / {reflection.reaction} / {reflection.moderation_status}</span>
+                </div>
+                <p>{reflection.body}</p>
+              </article>
+            ))
+          ) : (
+            <p className="warning">No reflections submitted yet.</p>
+          )}
         </div>
-      </section>
-
-      <section className="stack">
-        {reflections.length ? (
-          reflections.map((reflection) => (
-            <article className="row-card" key={reflection.id}>
-              <h3>{reflection.episode_title}</h3>
-              <p className="hint">Reaction: {reactionIcons[reflection.reaction] ?? "Reaction"} / {reflection.reaction} / {reflection.moderation_status}</p>
-              <p>{reflection.body}</p>
-            </article>
-          ))
-        ) : (
-          <p className="warning">No reflections submitted yet.</p>
-        )}
-      </section>
-
-      <style>{`
-        .rewards-view {
-          display: grid;
-          gap: 22px;
-        }
-
-        .reward-hero,
-        .rewards-grid {
-          display: grid;
-          grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
-          gap: 18px;
-          align-items: stretch;
-        }
-
-        .reward-score-card,
-        .reward-breakdown,
-        .reward-panel {
-          border: 1.5px solid rgba(9, 9, 9, .16);
-          border-radius: var(--radius-lg);
-          background: rgba(255, 254, 248, .86);
-          box-shadow: var(--shadow-card);
-        }
-
-        .reward-score-card,
-        .reward-panel {
-          padding: clamp(20px, 3vw, 28px);
-        }
-
-        .reward-score-card strong {
-          display: block;
-          margin: 16px 0;
-          font-size: clamp(42px, 7vw, 78px);
-          line-height: .85;
-          letter-spacing: -.06em;
-        }
-
-        .reward-score-card p,
-        .badge-card p,
-        .merch-card p {
-          color: var(--muted);
-          margin-bottom: 0;
-        }
-
-        .level-track {
-          height: 16px;
-          overflow: hidden;
-          border-radius: 999px;
-          background: rgba(9, 9, 9, .10);
-          box-shadow: inset 0 0 0 1px rgba(9, 9, 9, .10);
-        }
-
-        .level-track i {
-          display: block;
-          height: 100%;
-          border-radius: inherit;
-          background: linear-gradient(90deg, var(--yellow), var(--yellow-deep));
-        }
-
-        .reward-breakdown {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 1px;
-          overflow: hidden;
-          background: rgba(9, 9, 9, .12);
-        }
-
-        .reward-breakdown div {
-          padding: 18px;
-          background: rgba(255, 254, 248, .9);
-        }
-
-        .reward-breakdown span,
-        .badge-card span,
-        .merch-card span {
-          display: block;
-          color: var(--muted);
-          font-size: 12px;
-          font-weight: 900;
-          letter-spacing: .08em;
-          text-transform: uppercase;
-        }
-
-        .reward-breakdown strong {
-          display: block;
-          margin-top: 8px;
-          font-size: 34px;
-          line-height: 1;
-          letter-spacing: -.04em;
-        }
-
-        .reward-breakdown small {
-          display: block;
-          margin-top: 8px;
-          color: var(--dim);
-        }
-
-        .badge-grid,
-        .merch-list {
-          display: grid;
-          gap: 12px;
-          margin-top: 16px;
-        }
-
-        .badge-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .badge-card,
-        .merch-card {
-          padding: 16px;
-          border: 1.5px solid rgba(9, 9, 9, .12);
-          border-radius: 22px;
-          background: rgba(247, 245, 235, .72);
-        }
-
-        .badge-card.earned,
-        .merch-card.earned {
-          border-color: rgba(9, 9, 9, .45);
-          background: linear-gradient(135deg, rgba(255, 210, 26, .44), rgba(255, 254, 248, .88));
-        }
-
-        .badge-card strong,
-        .merch-card strong {
-          display: block;
-          margin-top: 8px;
-          font-size: 18px;
-        }
-
-        @media (max-width: 900px) {
-          .reward-hero,
-          .rewards-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 620px) {
-          .reward-breakdown,
-          .badge-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
+      </details>
     </main>
   );
 }
