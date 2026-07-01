@@ -77,20 +77,21 @@ export default async function SeasonPage({
         {episodes.map((episode) => {
           const isFirstEpisode = episode.episode_number === 1 && season.season_number === 1;
           const unlocked = isFirstEpisode || unlockedIds.has(episode.id);
-
-          return (
-            <article className="row-card" key={episode.id}>
+          const content = (
+            <>
               <h3>Episode {episode.episode_number} — {episode.title}</h3>
               <p>{episode.synopsis}</p>
-              {unlocked ? (
-                <Link className="button" href={`/comics/${comic.slug}/season/${season.season_number}/episode/${episode.episode_number}`}>
-                  Read
-                </Link>
-              ) : (
-                <button className="button-small" disabled>
-                  Locked
-                </button>
-              )}
+              <p className="hint">{unlocked ? "Tap anywhere to read" : "Locked until the previous reflection is submitted"}</p>
+            </>
+          );
+
+          return unlocked ? (
+            <Link className="row-card clickable-card" href={`/comics/${comic.slug}/season/${season.season_number}/episode/${episode.episode_number}`} key={episode.id}>
+              <article>{content}</article>
+            </Link>
+          ) : (
+            <article className="row-card locked-card" key={episode.id}>
+              {content}
             </article>
           );
         })}
