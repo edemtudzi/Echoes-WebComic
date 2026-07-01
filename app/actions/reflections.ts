@@ -56,6 +56,10 @@ export async function submitReflection(formData: FormData) {
       [user.id, episodeId, reaction, body]
     );
 
+    if (result?.reflection_id) {
+      await query(`update public.reflections set moderation_status = 'approved' where id = $1`, [result.reflection_id]);
+    }
+
     if (rating && result?.reflection_id) {
       try {
         await query(`update public.reflections set rating = $1 where id = $2`, [rating, result.reflection_id]);
@@ -74,6 +78,7 @@ export async function submitReflection(formData: FormData) {
 
   revalidatePath(returnPath);
   revalidatePath("/progress");
+  revalidatePath("/admin");
 
   if (nextEpisodePath) {
     revalidatePath(nextEpisodePath);
