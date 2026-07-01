@@ -1,3 +1,27 @@
+.redesigned-dashboard,
+.table-panel {
+  min-width: 0;
+}
+
+.table-panel {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.table-panel > .table-wrap {
+  display: block;
+  max-width: calc(100% - 24px);
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.table-panel .analytics-table {
+  width: max-content;
+  min-width: 980px !important;
+}
+
 @media (max-width: 760px) {
   .reward-breakdown {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -63,6 +87,7 @@
 
   .table-panel > .table-wrap {
     margin: 12px !important;
+    max-width: calc(100% - 24px);
   }
 
   .table-panel .analytics-table {
