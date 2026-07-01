@@ -65,6 +65,24 @@ export default async function EpisodePage({
   const canRead = isFirstEpisode || Boolean(unlock);
   const returnPath = `/comics/${comic.slug}/season/${season.season_number}/episode/${episode.episode_number}`;
 
+  if (canRead) {
+    await query(
+      `insert into public.reader_progress (
+         user_id,
+         comic_id,
+         season_id,
+         episode_id,
+         last_page_number
+       )
+       values ($1, $2, $3, $4, 1)
+       on conflict (user_id, episode_id)
+       do update set
+         last_page_number = greatest(public.reader_progress.last_page_number, 1),
+         updated_at = now()`,
+      [user.id, comic.id, season.id, episode.id]
+    );
+  }
+
   const pages = canRead
     ? await query<{
         id: string;
