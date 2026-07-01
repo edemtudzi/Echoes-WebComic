@@ -5,6 +5,7 @@ import "./navigation-polish.css";
 import "./visual-refresh.css";
 import "./header-fix.css";
 import "./compact-ui.css";
+import "./graphics-refresh.css";
 import { getUser } from "@/lib/auth";
 import { signOut } from "@/app/actions/auth";
 import { HeaderNav } from "@/app/header-nav";
