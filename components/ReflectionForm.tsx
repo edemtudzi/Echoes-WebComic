@@ -42,7 +42,7 @@ export function ReflectionForm({ episodeId, returnPath }: ReflectionFormProps) {
           <div className="eyebrow">Unlock the next episode</div>
           <h3>React, rate, then say what stayed with you.</h3>
         </div>
-        <span>+40 pts</span>
+        <span>You get +40 pts</span>
       </div>
       <p className="hint">Quick reaction first. The reflection can be honest, short, and specific.</p>
 
