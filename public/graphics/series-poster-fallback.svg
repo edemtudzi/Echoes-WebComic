@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Original series poster artwork</title>
+  <desc id="desc">A cinematic abstract poster with comic panels, a glowing source, and black and yellow graphic forms.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fffdf5"/>
+      <stop offset="0.6" stop-color="#eee8d7"/>
+      <stop offset="1" stop-color="#cac2af"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe875"/>
+      <stop offset="0.5" stop-color="#ffd21a"/>
+      <stop offset="1" stop-color="#d99b00"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="43%" r="55%">
+      <stop offset="0" stop-color="#fff9ce" stop-opacity="1"/>
+      <stop offset="0.38" stop-color="#ffd21a" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#ffd21a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#090909" stop-opacity="0"/>
+      <stop offset="0.66" stop-color="#090909" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#090909" stop-opacity="0.9"/>
+    </linearGradient>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.5" fill="#090909" opacity="0.16"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="20" stdDeviation="16" flood-color="#000" flood-opacity="0.24"/>
+    </filter>
+  </defs>
+
+  <rect width="720" height="1000" rx="42" fill="url(#paper)"/>
+  <path d="M0 0h720v268L0 534Z" fill="url(#gold)"/>
+  <rect width="720" height="1000" fill="url(#dots)" opacity="0.52"/>
+  <path d="M-20 770c112-68 184-151 216-250 48-151 146-246 294-286 92-25 167-66 244-132" fill="none" stroke="#090909" stroke-width="8" opacity="0.11"/>
+  <path d="M-24 618c92-16 166-54 223-115 78-83 110-187 224-241 72-34 164-35 275-4" fill="none" stroke="#fffef8" stroke-width="16" opacity="0.36"/>
+
+  <g filter="url(#shadow)">
+    <rect x="92" y="162" width="430" height="570" rx="32" fill="#fffef8" opacity="0.93"/>
+    <path d="M118 190h378v205H118Z" fill="#090909"/>
+    <path d="M118 394h378v180L118 652Z" fill="#ffd21a"/>
+    <rect x="156" y="626" width="244" height="18" rx="9" fill="#090909" opacity="0.72"/>
+    <rect x="156" y="666" width="300" height="12" rx="6" fill="#090909" opacity="0.42"/>
+  </g>
+
+  <circle cx="394" cy="484" r="238" fill="url(#glow)"/>
+
+  <g filter="url(#shadow)">
+    <path d="M368 285c101 75 151 161 151 258 0 98-50 184-151 258-55-102-83-188-83-258 0-69 28-155 83-258Z" fill="#d88f00"/>
+    <path d="M340 285c-101 75-152 161-152 258 0 98 51 184 152 258 55-102 83-188 83-258 0-69-28-155-83-258Z" fill="#fff0b2"/>
+    <path d="M354 345c42 65 63 131 63 198 0 68-21 134-63 198-42-64-63-130-63-198 0-67 21-133 63-198Z" fill="#090909"/>
+    <path d="M268 488c26 20 53 30 82 30 30 0 60-10 88-30M256 558c33 24 65 36 95 36 31 0 64-12 100-36M274 628c28 20 55 30 82 30 28 0 57-10 86-30" fill="none" stroke="#704000" stroke-width="8" stroke-linecap="round" opacity="0.72"/>
+  </g>
+
+  <g opacity="0.92">
+    <rect x="424" y="100" width="154" height="220" rx="24" fill="#fffef8" stroke="#090909" stroke-opacity="0.16" stroke-width="3"/>
+    <path d="M424 100h154v90L424 262Z" fill="#090909"/>
+    <circle cx="514" cy="170" r="28" fill="#ffd21a"/>
+  </g>
+
+  <rect y="560" width="720" height="440" fill="url(#floor)"/>
+</svg>
