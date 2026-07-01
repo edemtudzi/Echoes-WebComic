@@ -105,7 +105,7 @@ export default async function EpisodePage({
   }));
 
   return (
-    <main className="view">
+    <main className="view episode-reader-view">
       <section className="section-head">
         <div>
           <div className="eyebrow">{comic.title} / {season.title}</div>
@@ -128,19 +128,21 @@ export default async function EpisodePage({
           </div>
         </section>
       ) : (
-        <section className="reader">
-          <aside className="reader-side form-card">
-            <div className="eyebrow">Now Reading</div>
-            <h3>{episode.title}</h3>
+        <section className="reader expanded-reader">
+          <div className="reader-meta-strip">
+            <div>
+              <div className="eyebrow">Now Reading</div>
+              <h3>{episode.title}</h3>
+            </div>
             <p>{episode.synopsis}</p>
-            <p className="hint">{publicPages.length || "No"} published page(s)</p>
-          </aside>
+            <span>{publicPages.length || "No"} published page(s)</span>
+          </div>
 
-          <div className="comic-page">
+          <div className="comic-page expanded-comic-page">
             {publicPages.length ? (
               publicPages.map((page) => (
-                <figure key={page.id} style={{ margin: 0 }}>
-                  <img className="page-image" src={page.imageUrl ?? ""} alt={page.alt_text || `Page ${page.page_number}`} />
+                <figure key={page.id} className="comic-page-frame">
+                  <img className="page-image expanded-page-image" src={page.imageUrl ?? ""} alt={page.alt_text || `Page ${page.page_number}`} />
                   {page.caption ? <figcaption className="hint">{page.caption}</figcaption> : null}
                 </figure>
               ))
@@ -158,6 +160,95 @@ export default async function EpisodePage({
           </div>
         </section>
       )}
+
+      <style>{`
+        .episode-reader-view {
+          width: min(1480px, calc(100% - 32px));
+        }
+
+        .expanded-reader {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+
+        .reader-meta-strip {
+          display: grid;
+          grid-template-columns: minmax(220px, .7fr) minmax(260px, 1.4fr) auto;
+          align-items: center;
+          gap: 18px;
+          padding: 16px 20px;
+          border: 1.5px solid rgba(9, 9, 9, .14);
+          border-radius: 28px;
+          background: rgba(255, 254, 248, .78);
+          box-shadow: 0 14px 34px rgba(0, 0, 0, .08), inset 0 1px 0 rgba(255, 255, 255, .82);
+        }
+
+        .reader-meta-strip h3,
+        .reader-meta-strip p {
+          margin: 0;
+        }
+
+        .reader-meta-strip p {
+          color: var(--muted);
+        }
+
+        .reader-meta-strip span {
+          justify-self: end;
+          white-space: nowrap;
+          color: var(--ink);
+          border: 1px solid rgba(9, 9, 9, .58);
+          border-radius: 999px;
+          background: var(--yellow-soft);
+          padding: 8px 12px;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .expanded-comic-page {
+          width: 100%;
+          padding: clamp(14px, 2vw, 24px);
+        }
+
+        .comic-page-frame {
+          margin: 0;
+          width: 100%;
+        }
+
+        .expanded-page-image {
+          display: block;
+          width: 100%;
+          height: auto;
+          min-height: 0;
+          object-fit: contain;
+        }
+
+        @media (max-width: 860px) {
+          .reader-meta-strip {
+            grid-template-columns: 1fr;
+            align-items: start;
+          }
+
+          .reader-meta-strip span {
+            justify-self: start;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .episode-reader-view {
+            width: min(100% - 18px, 1480px);
+          }
+
+          .reader-meta-strip {
+            border-radius: 24px;
+            padding: 14px;
+          }
+
+          .expanded-comic-page {
+            padding: 10px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
