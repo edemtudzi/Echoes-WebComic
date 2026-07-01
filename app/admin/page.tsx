@@ -33,7 +33,6 @@ type RecentReflectionRow = {
   display_name: string;
   email: string;
   reaction: string;
-  moderation_status: string;
   created_at: string;
   body: string;
   episode_title: string;
@@ -46,13 +45,6 @@ const reactionLabels: Record<string, string> = {
   confused: "Confused",
   inspired: "Inspired",
   other: "Other"
-};
-
-const statusLabels: Record<string, string> = {
-  pending: "Pending",
-  approved: "Approved",
-  flagged: "Flagged",
-  rejected: "Rejected"
 };
 
 function num(value: string | number | null | undefined) {
@@ -152,9 +144,6 @@ export default async function AdminPage() {
   const reactions = await query<BreakdownRow>(
     `select reaction as label, count(*)::text as total from public.reflections group by reaction order by reaction asc`
   );
-  const moderation = await query<BreakdownRow>(
-    `select moderation_status as label, count(*)::text as total from public.reflections group by moderation_status order by moderation_status asc`
-  );
   const episodePerformance = await query<EpisodeRow>(
     `select
        e.id as episode_id,
@@ -197,7 +186,7 @@ export default async function AdminPage() {
      limit 8`
   );
   const recentReflections = await query<RecentReflectionRow>(
-    `select r.id, u.display_name, u.email, r.reaction, r.moderation_status, r.created_at::text, r.body, e.title as episode_title
+    `select r.id, u.display_name, u.email, r.reaction, r.created_at::text, r.body, e.title as episode_title
      from public.reflections r
      join public.app_users u on u.id = r.user_id
      join public.episodes e on e.id = r.episode_id
@@ -344,20 +333,6 @@ export default async function AdminPage() {
             })}
           </div>
         </details>
-
-        <details className="collapse-panel">
-          <summary>
-            <span>Moderation</span>
-            <strong>Reflection status</strong>
-            <em>{fmt(totalFor(moderation, "pending"))} pending</em>
-          </summary>
-          <div className="bar-list compact-bars">
-            {Object.entries(statusLabels).map(([key, label]) => {
-              const total = totalFor(moderation, key);
-              return <div className="bar-row" key={key}><div><span>{label}</span><strong>{fmt(total)}</strong></div><i style={{ width: width(total, metrics.total_reflections) }} /></div>;
-            })}
-          </div>
-        </details>
       </section>
 
       <details className="collapse-panel table-panel">
@@ -415,7 +390,7 @@ export default async function AdminPage() {
               <div className="compact-row reflection-row" key={reflection.id}>
                 <div>
                   <strong>{reflection.display_name}</strong>
-                  <span>{reflection.episode_title} / {reactionLabels[reflection.reaction] ?? reflection.reaction} / {statusLabels[reflection.moderation_status] ?? reflection.moderation_status}</span>
+                  <span>{reflection.episode_title} / {reactionLabels[reflection.reaction] ?? reflection.reaction}</span>
                 </div>
                 <p>{shortText(reflection.body)}</p>
               </div>
