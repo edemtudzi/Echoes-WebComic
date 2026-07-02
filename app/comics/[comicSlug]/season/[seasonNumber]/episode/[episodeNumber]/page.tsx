@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { one, query } from "@/lib/db";
 import { EpisodeListDrawer } from "@/components/EpisodeListDrawer";
+import { ReaderProgressDock } from "@/components/ReaderProgressDock";
 import { ReflectionForm } from "@/components/ReflectionForm";
 
 export default async function EpisodePage({
@@ -159,8 +160,14 @@ export default async function EpisodePage({
 
           <div className="comic-page expanded-comic-page">
             {publicPages.length ? (
-              publicPages.map((page) => (
-                <figure key={page.id} className="comic-page-frame">
+              publicPages.map((page, index) => (
+                <figure
+                  id={`episode-page-${page.page_number}`}
+                  key={page.id}
+                  className="comic-page-frame"
+                  data-reader-panel={index}
+                  data-reader-page-number={page.page_number}
+                >
                   <img className="page-image expanded-page-image" src={page.imageUrl ?? ""} alt={page.alt_text || `Page ${page.page_number}`} />
                   {page.caption ? <figcaption className="hint">{page.caption}</figcaption> : null}
                 </figure>
@@ -177,16 +184,29 @@ export default async function EpisodePage({
 
             <ReflectionForm episodeId={episode.id} returnPath={returnPath} />
           </div>
+
+          <ReaderProgressDock totalPages={publicPages.length} />
         </section>
       )}
 
       <style>{`
+        :global(html:has(.episode-reader-view)) {
+          scroll-behavior: smooth;
+        }
+
         .episode-reader-view {
-          width: min(1480px, calc(100% - 32px));
+          width: min(1180px, calc(100% - 32px));
+          padding-top: clamp(82px, 7vw, 108px);
         }
 
         .episode-head {
           overflow: visible;
+          margin-bottom: 14px;
+        }
+
+        .episode-head h2 {
+          font-size: clamp(30px, 5vw, 56px);
+          letter-spacing: -.06em;
         }
 
         .episode-list-drawer {
@@ -291,17 +311,17 @@ export default async function EpisodePage({
         .expanded-reader {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 18px;
+          gap: 14px;
         }
 
         .reader-meta-strip {
           display: grid;
-          grid-template-columns: minmax(220px, .7fr) minmax(260px, 1.4fr) auto;
+          grid-template-columns: minmax(180px, .62fr) minmax(240px, 1.35fr) auto;
           align-items: center;
-          gap: 18px;
-          padding: 16px 20px;
+          gap: 16px;
+          padding: 12px 16px;
           border: 1.5px solid rgba(9, 9, 9, .14);
-          border-radius: 28px;
+          border-radius: 24px;
           background: rgba(255, 254, 248, .78);
           box-shadow: 0 14px 34px rgba(0, 0, 0, .08), inset 0 1px 0 rgba(255, 255, 255, .82);
         }
@@ -311,8 +331,13 @@ export default async function EpisodePage({
           margin: 0;
         }
 
+        .reader-meta-strip h3 {
+          font-size: clamp(18px, 2vw, 24px);
+        }
+
         .reader-meta-strip p {
           color: var(--muted);
+          font-size: 15px;
         }
 
         .reader-meta-strip span {
@@ -328,21 +353,41 @@ export default async function EpisodePage({
         }
 
         .expanded-comic-page {
-          width: 100%;
-          padding: clamp(14px, 2vw, 24px);
+          width: min(100%, 980px);
+          margin-inline: auto;
+          padding: clamp(10px, 1.6vw, 18px);
+          border-radius: 34px;
+          background: #070707;
+          box-shadow: 0 26px 80px rgba(0, 0, 0, .22);
         }
 
         .comic-page-frame {
-          margin: 0;
+          display: grid;
+          justify-items: center;
+          gap: 8px;
           width: 100%;
+          margin: 0 0 clamp(14px, 2.2vw, 26px);
+          content-visibility: auto;
+          contain-intrinsic-size: 760px;
+          scroll-margin-top: 118px;
         }
 
         .expanded-page-image {
           display: block;
-          width: 100%;
+          width: auto;
+          max-width: 100%;
+          max-height: min(82svh, 920px);
           height: auto;
-          min-height: 0;
           object-fit: contain;
+          border-radius: 18px;
+          background: #111;
+          box-shadow: 0 10px 34px rgba(0, 0, 0, .24);
+        }
+
+        .comic-page-frame figcaption {
+          width: min(100%, 760px);
+          color: rgba(255, 253, 247, .76);
+          text-align: center;
         }
 
         @media (max-width: 860px) {
@@ -357,8 +402,30 @@ export default async function EpisodePage({
         }
 
         @media (max-width: 640px) {
+          :global(html:has(.episode-reader-view)) {
+            scroll-snap-type: y proximity;
+            background: #070707;
+          }
+
           .episode-reader-view {
-            width: min(100% - 18px, 1480px);
+            width: 100%;
+            padding-top: 86px;
+          }
+
+          .episode-head {
+            position: sticky;
+            top: 76px;
+            z-index: 34;
+            width: calc(100% - 18px);
+            margin: 0 auto 8px;
+            padding: 12px 14px !important;
+            border-radius: 24px !important;
+            background: rgba(255, 254, 248, .88) !important;
+            backdrop-filter: blur(18px);
+          }
+
+          .episode-head h2 {
+            font-size: clamp(23px, 7vw, 32px);
           }
 
           .episode-list-panel {
@@ -370,13 +437,48 @@ export default async function EpisodePage({
             max-height: calc(100vh - 152px);
           }
 
+          .expanded-reader {
+            gap: 8px;
+          }
+
           .reader-meta-strip {
-            border-radius: 24px;
-            padding: 14px;
+            width: calc(100% - 18px);
+            margin-inline: auto;
+            border-radius: 22px;
+            padding: 11px 12px;
+          }
+
+          .reader-meta-strip p {
+            display: none;
           }
 
           .expanded-comic-page {
-            padding: 10px;
+            width: 100%;
+            margin: 0;
+            padding: 0 0 96px;
+            border-radius: 0;
+            box-shadow: none;
+          }
+
+          .comic-page-frame {
+            min-height: calc(100svh - 106px);
+            margin: 0;
+            padding: 10px 8px 14px;
+            align-content: center;
+            scroll-snap-align: start;
+            scroll-margin-top: 106px;
+          }
+
+          .expanded-page-image {
+            max-width: 100%;
+            max-height: calc(100svh - 128px);
+            border-radius: 14px;
+            box-shadow: 0 18px 42px rgba(0, 0, 0, .36);
+          }
+
+          .comic-page-frame figcaption {
+            padding-inline: 10px;
+            font-size: 12px;
           }
         }
       `}</style>
