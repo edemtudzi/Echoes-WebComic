@@ -8,6 +8,7 @@ import {
   uploadEpisodeCover,
   uploadEpisodePage
 } from "@/app/actions/admin";
+import { BulkEpisodePageUploader } from "@/components/BulkEpisodePageUploader";
 import { requireAdmin } from "@/lib/auth";
 import { one, query } from "@/lib/db";
 
@@ -148,13 +149,21 @@ export default async function EpisodePagesAdminPage({
             </form>
           ) : null}
 
+          <BulkEpisodePageUploader
+            comicSlug={episode.comic_slug}
+            defaultStartPageNumber={pageRows.length + 1}
+            episodeId={episode.id}
+            episodeNumber={episode.episode_number}
+            seasonNumber={episode.season_number}
+          />
+
           <form className="form-card" action={uploadEpisodePage}>
             <input type="hidden" name="episodeId" value={episode.id} />
             <input type="hidden" name="comicSlug" value={episode.comic_slug} />
             <input type="hidden" name="seasonNumber" value={episode.season_number} />
             <input type="hidden" name="episodeNumber" value={episode.episode_number} />
-            <h3>Upload story page / panel</h3>
-            <p className="hint">Use this only for reader panels, for example episode-1-panel-01.png through episode-1-panel-31.png.</p>
+            <h3>Upload one story page / panel</h3>
+            <p className="hint">Use this for single fixes. For a full episode, use the bulk uploader above.</p>
             <div className="field">
               <label htmlFor="page_number">Page number</label>
               <input id="page_number" name="page_number" type="number" min={1} required defaultValue={pageRows.length + 1} />
