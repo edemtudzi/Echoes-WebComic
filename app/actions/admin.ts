@@ -259,6 +259,34 @@ export async function uploadComicAsset(formData: FormData) {
   redirect(`/admin/comics/${comicId}?saved=1`);
 }
 
+export async function deleteComicAsset(formData: FormData) {
+  await requireAdmin();
+  const comicId = asText(formData, "comicId");
+  const assetType = asText(formData, "assetType");
+  const assets: Record<string, { column: string; label: string }> = {
+    cover: { column: "cover_image_path", label: "series/library cover" },
+    now_streaming: { column: "now_streaming_image_path", label: "now streaming poster" },
+    series_poster: { column: "series_poster_image_path", label: "series poster" }
+  };
+  const asset = assets[assetType];
+
+  if (!asset) {
+    redirect(`/admin/comics/${comicId}?error=${encodeURIComponent("Unknown comic asset type.")}`);
+  }
+
+  try {
+    await query(`update public.comics set ${asset.column} = null where id = $1`, [comicId]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : `Could not delete ${asset.label}.`;
+    redirect(`/admin/comics/${comicId}?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/library");
+  revalidatePath(`/admin/comics/${comicId}`);
+  redirect(`/admin/comics/${comicId}?saved=1`);
+}
+
 export async function createSeason(formData: FormData) {
   await requireAdmin();
   const comicId = asText(formData, "comicId");
@@ -303,6 +331,22 @@ export async function uploadSeasonCover(formData: FormData) {
     ]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not upload season cover.";
+    redirect(`/admin/comics/${comicId}?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath(`/admin/comics/${comicId}`);
+  redirect(`/admin/comics/${comicId}?saved=1`);
+}
+
+export async function deleteSeasonCover(formData: FormData) {
+  await requireAdmin();
+  const comicId = asText(formData, "comicId");
+  const seasonId = asText(formData, "seasonId");
+
+  try {
+    await query(`update public.seasons set cover_image_path = null where id = $1 and comic_id = $2`, [seasonId, comicId]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not delete season cover.";
     redirect(`/admin/comics/${comicId}?error=${encodeURIComponent(message)}`);
   }
 
@@ -356,6 +400,21 @@ export async function uploadEpisodeCover(formData: FormData) {
     await query(`update public.episodes set cover_image_path = $1 where id = $2`, [upload.secure_url, episodeId]);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not upload episode cover.";
+    redirect(`/admin/episodes/${episodeId}/pages?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath(`/admin/episodes/${episodeId}/pages`);
+  redirect(`/admin/episodes/${episodeId}/pages?saved=1`);
+}
+
+export async function deleteEpisodeCover(formData: FormData) {
+  await requireAdmin();
+  const episodeId = asText(formData, "episodeId");
+
+  try {
+    await query(`update public.episodes set cover_image_path = null where id = $1`, [episodeId]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not delete episode cover.";
     redirect(`/admin/episodes/${episodeId}/pages?error=${encodeURIComponent(message)}`);
   }
 
@@ -426,6 +485,23 @@ export async function replaceEpisodePageImage(formData: FormData) {
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not replace page image.";
+    redirect(`/admin/episodes/${episodeId}/pages?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath(`/admin/episodes/${episodeId}/pages`);
+  revalidatePath("/admin");
+  redirect(`/admin/episodes/${episodeId}/pages?saved=1`);
+}
+
+export async function deleteEpisodePage(formData: FormData) {
+  await requireAdmin();
+  const episodeId = asText(formData, "episodeId");
+  const pageId = asText(formData, "pageId");
+
+  try {
+    await query(`delete from public.pages where id = $1 and episode_id = $2`, [pageId, episodeId]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not delete story page.";
     redirect(`/admin/episodes/${episodeId}/pages?error=${encodeURIComponent(message)}`);
   }
 
