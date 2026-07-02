@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createEpisode, createSeason, updateComic, uploadComicAsset, uploadSeasonCover } from "@/app/actions/admin";
+import {
+  createEpisode,
+  createSeason,
+  deleteComicAsset,
+  deleteSeasonCover,
+  updateComic,
+  uploadComicAsset,
+  uploadSeasonCover
+} from "@/app/actions/admin";
 import { requireAdmin } from "@/lib/auth";
 import { one, query } from "@/lib/db";
 
@@ -138,60 +146,120 @@ export default async function EditComicPage({
         <p>These images are separate from comic pages. Use them for cards, posters, and promotion.</p>
       </section>
 
+      <section className="form-card asset-output-card">
+        <div className="eyebrow">Current Series: Echoes of the Source</div>
+        <h3>Current asset outputs</h3>
+        <div className="asset-output-list">
+          <div>
+            <strong>Series cover / library card</strong>
+            <span>{comic.cover_image_path ?? "Not uploaded"}</span>
+          </div>
+          <div>
+            <strong>Now streaming poster</strong>
+            <span>{comic.now_streaming_image_path ?? "Not uploaded"}</span>
+          </div>
+          <div>
+            <strong>Series poster / promo art</strong>
+            <span>{comic.series_poster_image_path ?? "Not uploaded"}</span>
+          </div>
+          <div>
+            <strong>Season cover</strong>
+            <span>{seasons.find((season) => season.cover_image_path)?.cover_image_path ?? "Not uploaded"}</span>
+          </div>
+          <div>
+            <strong>Episode cover / thumbnail</strong>
+            <span>{episodes.find((episode) => episode.cover_image_path)?.cover_image_path ?? "Not uploaded"}</span>
+          </div>
+        </div>
+      </section>
+
       <section className="asset-grid">
-        <form className="form-card asset-card" action={uploadComicAsset}>
-          <input type="hidden" name="comicId" value={comic.id} />
-          <input type="hidden" name="comicSlug" value={comic.slug} />
-          <input type="hidden" name="assetType" value="cover" />
+        <article className="form-card asset-card">
           <h3>Series cover / library card</h3>
           {comic.cover_image_path ? <img className="asset-preview" src={comic.cover_image_path} alt={`${comic.title} cover`} /> : null}
           <p className="hint image-path">{comic.cover_image_path ?? "No cover uploaded yet."}</p>
-          <div className="field">
-            <label htmlFor="comic-cover">Cover image</label>
-            <input id="comic-cover" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
-          </div>
-          <div className="actions">
-            <button className="button" type="submit">
-              Upload Cover
-            </button>
-          </div>
-        </form>
+          <form action={uploadComicAsset}>
+            <input type="hidden" name="comicId" value={comic.id} />
+            <input type="hidden" name="comicSlug" value={comic.slug} />
+            <input type="hidden" name="assetType" value="cover" />
+            <div className="field">
+              <label htmlFor="comic-cover">Cover image</label>
+              <input id="comic-cover" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+            </div>
+            <div className="actions">
+              <button className="button" type="submit">
+                Upload Cover
+              </button>
+            </div>
+          </form>
+          {comic.cover_image_path ? (
+            <form className="delete-asset-form" action={deleteComicAsset}>
+              <input type="hidden" name="comicId" value={comic.id} />
+              <input type="hidden" name="assetType" value="cover" />
+              <button className="button-small danger-button" type="submit">
+                Delete Cover
+              </button>
+            </form>
+          ) : null}
+        </article>
 
-        <form className="form-card asset-card" action={uploadComicAsset}>
-          <input type="hidden" name="comicId" value={comic.id} />
-          <input type="hidden" name="comicSlug" value={comic.slug} />
-          <input type="hidden" name="assetType" value="now_streaming" />
+        <article className="form-card asset-card">
           <h3>Now streaming poster</h3>
           {comic.now_streaming_image_path ? <img className="asset-preview" src={comic.now_streaming_image_path} alt={`${comic.title} now streaming poster`} /> : null}
           <p className="hint image-path">{comic.now_streaming_image_path ?? "No now streaming poster uploaded yet."}</p>
-          <div className="field">
-            <label htmlFor="now-streaming-poster">Poster image</label>
-            <input id="now-streaming-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
-          </div>
-          <div className="actions">
-            <button className="button" type="submit">
-              Upload Poster
-            </button>
-          </div>
-        </form>
+          <form action={uploadComicAsset}>
+            <input type="hidden" name="comicId" value={comic.id} />
+            <input type="hidden" name="comicSlug" value={comic.slug} />
+            <input type="hidden" name="assetType" value="now_streaming" />
+            <div className="field">
+              <label htmlFor="now-streaming-poster">Poster image</label>
+              <input id="now-streaming-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+            </div>
+            <div className="actions">
+              <button className="button" type="submit">
+                Upload Poster
+              </button>
+            </div>
+          </form>
+          {comic.now_streaming_image_path ? (
+            <form className="delete-asset-form" action={deleteComicAsset}>
+              <input type="hidden" name="comicId" value={comic.id} />
+              <input type="hidden" name="assetType" value="now_streaming" />
+              <button className="button-small danger-button" type="submit">
+                Delete Poster
+              </button>
+            </form>
+          ) : null}
+        </article>
 
-        <form className="form-card asset-card" action={uploadComicAsset}>
-          <input type="hidden" name="comicId" value={comic.id} />
-          <input type="hidden" name="comicSlug" value={comic.slug} />
-          <input type="hidden" name="assetType" value="series_poster" />
+        <article className="form-card asset-card">
           <h3>Series poster / promo art</h3>
           {comic.series_poster_image_path ? <img className="asset-preview" src={comic.series_poster_image_path} alt={`${comic.title} series poster`} /> : null}
           <p className="hint image-path">{comic.series_poster_image_path ?? "No series poster uploaded yet."}</p>
-          <div className="field">
-            <label htmlFor="series-poster">Poster image</label>
-            <input id="series-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
-          </div>
-          <div className="actions">
-            <button className="button" type="submit">
-              Upload Series Poster
-            </button>
-          </div>
-        </form>
+          <form action={uploadComicAsset}>
+            <input type="hidden" name="comicId" value={comic.id} />
+            <input type="hidden" name="comicSlug" value={comic.slug} />
+            <input type="hidden" name="assetType" value="series_poster" />
+            <div className="field">
+              <label htmlFor="series-poster">Poster image</label>
+              <input id="series-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+            </div>
+            <div className="actions">
+              <button className="button" type="submit">
+                Upload Series Poster
+              </button>
+            </div>
+          </form>
+          {comic.series_poster_image_path ? (
+            <form className="delete-asset-form" action={deleteComicAsset}>
+              <input type="hidden" name="comicId" value={comic.id} />
+              <input type="hidden" name="assetType" value="series_poster" />
+              <button className="button-small danger-button" type="submit">
+                Delete Series Poster
+              </button>
+            </form>
+          ) : null}
+        </article>
       </section>
 
       <section className="section-head" style={{ marginTop: 46 }}>
@@ -229,6 +297,15 @@ export default async function EditComicPage({
                 </button>
               </div>
             </form>
+            {season.cover_image_path ? (
+              <form className="delete-asset-form" action={deleteSeasonCover}>
+                <input type="hidden" name="comicId" value={comic.id} />
+                <input type="hidden" name="seasonId" value={season.id} />
+                <button className="button-small danger-button" type="submit">
+                  Delete Season Cover
+                </button>
+              </form>
+            ) : null}
 
             <div className="stack">
               {episodes

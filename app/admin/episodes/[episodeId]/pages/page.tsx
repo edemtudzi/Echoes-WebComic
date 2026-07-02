@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { replaceEpisodePageImage, updatePageStatus, uploadEpisodeCover, uploadEpisodePage } from "@/app/actions/admin";
+import {
+  deleteEpisodeCover,
+  deleteEpisodePage,
+  replaceEpisodePageImage,
+  updatePageStatus,
+  uploadEpisodeCover,
+  uploadEpisodePage
+} from "@/app/actions/admin";
 import { requireAdmin } from "@/lib/auth";
 import { one, query } from "@/lib/db";
 
@@ -94,6 +101,16 @@ export default async function EpisodePagesAdminPage({
           <h3>Episode {episode.episode_number}</h3>
           {episode.cover_image_path ? <img className="asset-preview" src={episode.cover_image_path} alt={`${episode.title} thumbnail`} /> : null}
           <p>{episode.synopsis}</p>
+          <div className="asset-output-list compact">
+            <div>
+              <strong>Episode cover / thumbnail</strong>
+              <span>{episode.cover_image_path ?? "Not uploaded"}</span>
+            </div>
+            <div>
+              <strong>Story pages</strong>
+              <span>{pageRows.length} uploaded</span>
+            </div>
+          </div>
           <p className="hint">
             Season {episode.season_number} / {episode.status} / {pageRows.length} page(s)
           </p>
@@ -120,6 +137,16 @@ export default async function EpisodePagesAdminPage({
               </button>
             </div>
           </form>
+          {episode.cover_image_path ? (
+            <form className="form-card delete-asset-form" action={deleteEpisodeCover}>
+              <input type="hidden" name="episodeId" value={episode.id} />
+              <h3>Delete episode cover / thumbnail</h3>
+              <p className="hint">This clears the episode card image. Reader story pages stay untouched.</p>
+              <button className="button-small danger-button" type="submit">
+                Delete Episode Cover
+              </button>
+            </form>
+          ) : null}
 
           <form className="form-card" action={uploadEpisodePage}>
             <input type="hidden" name="episodeId" value={episode.id} />
@@ -210,6 +237,15 @@ export default async function EpisodePagesAdminPage({
                       Replace Story Page
                     </button>
                   </form>
+
+                  <form action={deleteEpisodePage} className="delete-page-form">
+                    <input type="hidden" name="episodeId" value={episode.id} />
+                    <input type="hidden" name="pageId" value={page.id} />
+                    <p className="hint">Delete this uploaded story page without uploading a replacement.</p>
+                    <button className="button-small danger-button" type="submit">
+                      Delete Story Page
+                    </button>
+                  </form>
                 </div>
               </article>
             ))
@@ -225,7 +261,7 @@ export default async function EpisodePagesAdminPage({
         </div>
       </section>
       <style>{`
-        .page-admin-card{display:grid;gap:12px}.page-admin-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.page-admin-head h3{margin-bottom:0}.page-path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.page-admin-actions{display:grid;gap:10px}.page-status-form{margin-top:0}.replace-page-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end;padding:12px;border:1px solid rgba(9,9,9,.12);border-radius:18px;background:rgba(255,254,248,.68)}.replace-page-form .field{margin-top:0}.replace-page-form textarea{min-height:64px}.replace-page-form button{justify-self:start}.field-wide{grid-column:1/-1}@media(max-width:760px){.replace-page-form{grid-template-columns:1fr}.page-admin-head{align-items:start}.page-path{white-space:normal;word-break:break-word}}
+        .page-admin-card{display:grid;gap:12px}.page-admin-head{display:flex;align-items:start;justify-content:space-between;gap:12px}.page-admin-head h3{margin-bottom:0}.page-path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.page-admin-actions{display:grid;gap:10px}.page-status-form{margin-top:0}.replace-page-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end;padding:12px;border:1px solid rgba(9,9,9,.12);border-radius:18px;background:rgba(255,254,248,.68)}.replace-page-form .field{margin-top:0}.replace-page-form textarea{min-height:64px}.replace-page-form button{justify-self:start}.delete-page-form{display:grid;gap:8px;justify-items:start;padding:12px;border:1px solid rgba(121,28,28,.22);border-radius:18px;background:rgba(255,246,242,.74)}.delete-page-form p{margin:0}.field-wide{grid-column:1/-1}@media(max-width:760px){.replace-page-form{grid-template-columns:1fr}.page-admin-head{align-items:start}.page-path{white-space:normal;word-break:break-word}}
       `}</style>
     </main>
   );
