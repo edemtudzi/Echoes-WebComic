@@ -21,6 +21,15 @@ function getSubmitButton(event: SubmitEvent, form: HTMLFormElement) {
   return form.querySelector<HTMLButtonElement | HTMLInputElement>('button[type="submit"], input[type="submit"]');
 }
 
+function setButtonLabel(button: HTMLButtonElement | HTMLInputElement, label: string) {
+  if (button instanceof HTMLInputElement) {
+    button.value = label;
+    return;
+  }
+
+  button.textContent = label;
+}
+
 function resetUploadButtons() {
   document.querySelectorAll<HTMLButtonElement | HTMLInputElement>(".upload-button-loading").forEach((button) => {
     const originalLabel = button.dataset.originalLabel;
@@ -30,11 +39,7 @@ function resetUploadButtons() {
     button.disabled = false;
 
     if (originalLabel) {
-      if (button instanceof HTMLInputElement) {
-        button.value = originalLabel;
-      } else {
-        button.textContent = originalLabel;
-      }
+      setButtonLabel(button, originalLabel);
     }
   });
 }
@@ -59,17 +64,12 @@ export function GlobalFormLoader() {
       button.classList.add("upload-button-loading");
       button.setAttribute("aria-busy", "true");
       button.disabled = true;
-
-      if (button instanceof HTMLInputElement) {
-        button.value = "Uploading...";
-      } else {
-        button.textContent = "Uploading...";
-      }
+      setButtonLabel(button, "Uploading...");
 
       window.setTimeout(() => {
-        if (button.isConnected) {
+        if (button.isConnected && button.classList.contains("upload-button-loading")) {
           button.disabled = false;
-          button.textContent = button instanceof HTMLButtonElement ? "Still uploading..." : button.textContent;
+          setButtonLabel(button, "Still uploading...");
         }
       }, 45000);
     }
