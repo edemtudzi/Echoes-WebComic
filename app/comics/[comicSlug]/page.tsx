@@ -56,7 +56,7 @@ export default async function ComicPage({
       </section>
       <p className="lead">{comic.description}</p>
       {comic.series_poster_image_path ? (
-        <img className="series-poster" src={comic.series_poster_image_path} alt={`${comic.title} poster`} />
+        <img className="landscape-hero-image series-landscape-poster" src={comic.series_poster_image_path} alt={`${comic.title} poster`} />
       ) : null}
 
       <section className="stack">
@@ -64,7 +64,7 @@ export default async function ComicPage({
           const locked = season.status === "locked";
           const content = (
             <div className="media-row">
-              {season.cover_image_path ? <img className="media-thumb" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
+              {season.cover_image_path ? <img className="media-thumb landscape-thumb" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
               <div>
                 <h3>Season {season.season_number} — {season.title}</h3>
                 <p>{season.description}</p>
