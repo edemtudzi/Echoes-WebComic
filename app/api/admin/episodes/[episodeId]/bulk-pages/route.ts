@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { getUser } from "@/lib/auth";
 import { query } from "@/lib/db";
 
+export const runtime = "nodejs";
+
 type BulkPageRequest = {
   altPrefix?: string;
   caption?: string;
