@@ -1,7 +1,10 @@
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createSignedCloudinaryUpload } from "@/lib/cloudinary";
 import { getUser } from "@/lib/auth";
 import { safeFileName, slugify } from "@/lib/slug";
+
+export const runtime = "nodejs";
 
 type SignRequest = {
   comicSlug?: string;
@@ -34,7 +37,7 @@ function publicIdForPanel({
     `season-${seasonNumber}`,
     `episode-${episodeNumber}`,
     pagePart,
-    `${baseName}-${crypto.randomUUID()}`
+    `${baseName}-${randomUUID()}`
   ].join("/");
 }
 
