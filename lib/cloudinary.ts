@@ -6,7 +6,7 @@ type CloudinaryUploadResponse = {
   secure_url: string;
 };
 
-function cloudinaryFolder() {
+export function cloudinaryFolder() {
   return process.env.CLOUDINARY_FOLDER || "echoes-comic-assets";
 }
 
@@ -21,8 +21,7 @@ function signUploadParams(params: Record<string, string | number>) {
     .digest("hex");
 }
 
-export async function uploadImageToCloudinary(publicId: string, file: File) {
-  const cloudName = requireEnv("CLOUDINARY_CLOUD_NAME");
+export function createSignedCloudinaryUpload(publicId: string) {
   const timestamp = Math.floor(Date.now() / 1000);
   const paramsToSign = {
     folder: cloudinaryFolder(),
@@ -30,15 +29,28 @@ export async function uploadImageToCloudinary(publicId: string, file: File) {
     timestamp
   };
 
+  return {
+    apiKey: requireEnv("CLOUDINARY_API_KEY"),
+    cloudName: requireEnv("CLOUDINARY_CLOUD_NAME"),
+    folder: paramsToSign.folder,
+    publicId,
+    signature: signUploadParams(paramsToSign),
+    timestamp
+  };
+}
+
+export async function uploadImageToCloudinary(publicId: string, file: File) {
+  const signedUpload = createSignedCloudinaryUpload(publicId);
+
   const body = new FormData();
   body.append("file", file);
-  body.append("api_key", requireEnv("CLOUDINARY_API_KEY"));
-  body.append("folder", paramsToSign.folder);
-  body.append("public_id", paramsToSign.public_id);
-  body.append("timestamp", String(paramsToSign.timestamp));
-  body.append("signature", signUploadParams(paramsToSign));
+  body.append("api_key", signedUpload.apiKey);
+  body.append("folder", signedUpload.folder);
+  body.append("public_id", signedUpload.publicId);
+  body.append("timestamp", String(signedUpload.timestamp));
+  body.append("signature", signedUpload.signature);
 
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${signedUpload.cloudName}/image/upload`, {
     method: "POST",
     body
   });
