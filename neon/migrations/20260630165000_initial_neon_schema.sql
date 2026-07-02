@@ -32,6 +32,8 @@ create table public.comics (
   subtitle text,
   description text not null default '',
   cover_image_path text,
+  now_streaming_image_path text,
+  series_poster_image_path text,
   status text not null default 'draft'
     check (status in ('draft', 'published', 'archived')),
   sort_order integer not null default 0,
@@ -45,6 +47,7 @@ create table public.seasons (
   season_number integer not null check (season_number > 0),
   title text not null,
   description text not null default '',
+  cover_image_path text,
   status text not null default 'draft'
     check (status in ('draft', 'published', 'locked', 'archived')),
   unlock_rule jsonb not null default '{}'::jsonb,
@@ -59,6 +62,7 @@ create table public.episodes (
   episode_number integer not null check (episode_number > 0),
   title text not null,
   synopsis text not null default '',
+  cover_image_path text,
   status text not null default 'draft'
     check (status in ('draft', 'published', 'locked', 'archived')),
   requires_reflection boolean not null default true,

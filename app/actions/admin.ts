@@ -20,6 +20,21 @@ function hasUpload(file: FormDataEntryValue | null): file is File {
   return file instanceof File && file.size > 0;
 }
 
+function requireUpload(formData: FormData, key = "image") {
+  const file = formData.get(key);
+
+  if (!hasUpload(file)) {
+    throw new Error("Choose an image to upload.");
+  }
+
+  return file;
+}
+
+function publicIdFromParts(parts: string[], file: File) {
+  const baseName = safeFileName(file.name).replace(/\.[^.]+$/, "");
+  return [...parts, `${baseName}-${crypto.randomUUID()}`].join("/");
+}
+
 async function uploadPageImage({
   formData,
   comicSlug,
@@ -43,9 +58,8 @@ async function uploadPageImage({
     return null;
   }
 
-  const baseName = safeFileName(file.name).replace(/\.[^.]+$/, "");
-  const variant = suffix ? `${suffix}-` : "";
-  const publicId = `${comicSlug}/season-${seasonNumber}/episode-${episodeNumber}/page-${String(pageNumber).padStart(3, "0")}-${variant}${baseName}-${crypto.randomUUID()}`;
+  const pagePart = `page-${String(pageNumber).padStart(3, "0")}${suffix ? `-${suffix}` : ""}`;
+  const publicId = publicIdFromParts([comicSlug, `season-${seasonNumber}`, `episode-${episodeNumber}`, pagePart], file);
 
   return uploadImageToCloudinary(publicId, file);
 }
@@ -82,7 +96,7 @@ async function uploadPageFromForm({
       upload.secure_url,
       asText(formData, "alt_text") || asText(formData, "first_page_alt_text"),
       asText(formData, "caption") || asText(formData, "first_page_caption") || null,
-      asText(formData, "page_status") || asText(formData, "first_page_status") || "draft"
+      asText(formData, "status") || asText(formData, "page_status") || asText(formData, "first_page_status") || "draft"
     ]
   );
 }
@@ -212,6 +226,39 @@ export async function updateComic(formData: FormData) {
   redirect(`/admin/comics/${comicId}?saved=1`);
 }
 
+export async function uploadComicAsset(formData: FormData) {
+  await requireAdmin();
+  const comicId = asText(formData, "comicId");
+  const comicSlug = slugify(asText(formData, "comicSlug") || "comic");
+  const assetType = asText(formData, "assetType");
+  const assets: Record<string, { column: string; pathPart: string; label: string }> = {
+    cover: { column: "cover_image_path", pathPart: "series-cover", label: "series/library cover" },
+    now_streaming: { column: "now_streaming_image_path", pathPart: "now-streaming-poster", label: "now streaming poster" },
+    series_poster: { column: "series_poster_image_path", pathPart: "series-poster", label: "series poster" }
+  };
+  const asset = assets[assetType];
+
+  if (!asset) {
+    redirect(`/admin/comics/${comicId}?error=${encodeURIComponent("Unknown comic asset type.")}`);
+  }
+
+  try {
+    const file = requireUpload(formData);
+    const publicId = publicIdFromParts([comicSlug, "series-assets", asset.pathPart], file);
+    const upload = await uploadImageToCloudinary(publicId, file);
+
+    await query(`update public.comics set ${asset.column} = $1 where id = $2`, [upload.secure_url, comicId]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : `Could not upload ${asset.label}.`;
+    redirect(`/admin/comics/${comicId}?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/library");
+  revalidatePath(`/admin/comics/${comicId}`);
+  redirect(`/admin/comics/${comicId}?saved=1`);
+}
+
 export async function createSeason(formData: FormData) {
   await requireAdmin();
   const comicId = asText(formData, "comicId");
@@ -230,6 +277,32 @@ export async function createSeason(formData: FormData) {
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not create season.";
+    redirect(`/admin/comics/${comicId}?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath(`/admin/comics/${comicId}`);
+  redirect(`/admin/comics/${comicId}?saved=1`);
+}
+
+export async function uploadSeasonCover(formData: FormData) {
+  await requireAdmin();
+  const comicId = asText(formData, "comicId");
+  const seasonId = asText(formData, "seasonId");
+  const comicSlug = slugify(asText(formData, "comicSlug") || "comic");
+  const seasonNumber = asNumber(formData, "seasonNumber", 1);
+
+  try {
+    const file = requireUpload(formData);
+    const publicId = publicIdFromParts([comicSlug, `season-${seasonNumber}`, "season-cover"], file);
+    const upload = await uploadImageToCloudinary(publicId, file);
+
+    await query(`update public.seasons set cover_image_path = $1 where id = $2 and comic_id = $3`, [
+      upload.secure_url,
+      seasonId,
+      comicId
+    ]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not upload season cover.";
     redirect(`/admin/comics/${comicId}?error=${encodeURIComponent(message)}`);
   }
 
@@ -266,6 +339,28 @@ export async function createEpisode(formData: FormData) {
 
   revalidatePath(`/admin/comics/${comicId}`);
   redirect(`/admin/episodes/${episodeId}/pages`);
+}
+
+export async function uploadEpisodeCover(formData: FormData) {
+  await requireAdmin();
+  const episodeId = asText(formData, "episodeId");
+  const comicSlug = slugify(asText(formData, "comicSlug") || "comic");
+  const seasonNumber = asNumber(formData, "seasonNumber", 1);
+  const episodeNumber = asNumber(formData, "episodeNumber", 1);
+
+  try {
+    const file = requireUpload(formData);
+    const publicId = publicIdFromParts([comicSlug, `season-${seasonNumber}`, `episode-${episodeNumber}`, "episode-cover"], file);
+    const upload = await uploadImageToCloudinary(publicId, file);
+
+    await query(`update public.episodes set cover_image_path = $1 where id = $2`, [upload.secure_url, episodeId]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not upload episode cover.";
+    redirect(`/admin/episodes/${episodeId}/pages?error=${encodeURIComponent(message)}`);
+  }
+
+  revalidatePath(`/admin/episodes/${episodeId}/pages`);
+  redirect(`/admin/episodes/${episodeId}/pages?saved=1`);
 }
 
 export async function uploadEpisodePage(formData: FormData) {

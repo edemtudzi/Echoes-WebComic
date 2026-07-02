@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createEpisode, createSeason, updateComic } from "@/app/actions/admin";
+import { createEpisode, createSeason, updateComic, uploadComicAsset, uploadSeasonCover } from "@/app/actions/admin";
 import { requireAdmin } from "@/lib/auth";
 import { one, query } from "@/lib/db";
 
@@ -20,10 +20,23 @@ export default async function EditComicPage({
     title: string;
     subtitle: string | null;
     description: string;
+    cover_image_path: string | null;
+    now_streaming_image_path: string | null;
+    series_poster_image_path: string | null;
     status: string;
     sort_order: number;
   }>(
-    `select id, slug, title, subtitle, description, status, sort_order
+    `select
+       id,
+       slug,
+       title,
+       subtitle,
+       description,
+       cover_image_path,
+       now_streaming_image_path,
+       series_poster_image_path,
+       status,
+       sort_order
      from public.comics
      where id = $1`,
     [comicId]
@@ -38,9 +51,10 @@ export default async function EditComicPage({
     season_number: number;
     title: string;
     description: string;
+    cover_image_path: string | null;
     status: string;
   }>(
-    `select id, season_number, title, description, status
+    `select id, season_number, title, description, cover_image_path, status
      from public.seasons
      where comic_id = $1
      order by season_number asc`,
@@ -53,9 +67,10 @@ export default async function EditComicPage({
         season_id: string;
         episode_number: number;
         title: string;
+        cover_image_path: string | null;
         status: string;
       }>(
-        `select id, season_id, episode_number, title, status
+        `select id, season_id, episode_number, title, cover_image_path, status
          from public.episodes
          where season_id = any($1::uuid[])
          order by episode_number asc`,
@@ -115,6 +130,70 @@ export default async function EditComicPage({
         </div>
       </form>
 
+      <section className="section-head" style={{ marginTop: 34 }}>
+        <div>
+          <div className="eyebrow">Series Assets</div>
+          <h2>Upload public images.</h2>
+        </div>
+        <p>These images are separate from comic pages. Use them for cards, posters, and promotion.</p>
+      </section>
+
+      <section className="asset-grid">
+        <form className="form-card asset-card" action={uploadComicAsset}>
+          <input type="hidden" name="comicId" value={comic.id} />
+          <input type="hidden" name="comicSlug" value={comic.slug} />
+          <input type="hidden" name="assetType" value="cover" />
+          <h3>Series cover / library card</h3>
+          {comic.cover_image_path ? <img className="asset-preview" src={comic.cover_image_path} alt={`${comic.title} cover`} /> : null}
+          <p className="hint image-path">{comic.cover_image_path ?? "No cover uploaded yet."}</p>
+          <div className="field">
+            <label htmlFor="comic-cover">Cover image</label>
+            <input id="comic-cover" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+          </div>
+          <div className="actions">
+            <button className="button" type="submit">
+              Upload Cover
+            </button>
+          </div>
+        </form>
+
+        <form className="form-card asset-card" action={uploadComicAsset}>
+          <input type="hidden" name="comicId" value={comic.id} />
+          <input type="hidden" name="comicSlug" value={comic.slug} />
+          <input type="hidden" name="assetType" value="now_streaming" />
+          <h3>Now streaming poster</h3>
+          {comic.now_streaming_image_path ? <img className="asset-preview" src={comic.now_streaming_image_path} alt={`${comic.title} now streaming poster`} /> : null}
+          <p className="hint image-path">{comic.now_streaming_image_path ?? "No now streaming poster uploaded yet."}</p>
+          <div className="field">
+            <label htmlFor="now-streaming-poster">Poster image</label>
+            <input id="now-streaming-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+          </div>
+          <div className="actions">
+            <button className="button" type="submit">
+              Upload Poster
+            </button>
+          </div>
+        </form>
+
+        <form className="form-card asset-card" action={uploadComicAsset}>
+          <input type="hidden" name="comicId" value={comic.id} />
+          <input type="hidden" name="comicSlug" value={comic.slug} />
+          <input type="hidden" name="assetType" value="series_poster" />
+          <h3>Series poster / promo art</h3>
+          {comic.series_poster_image_path ? <img className="asset-preview" src={comic.series_poster_image_path} alt={`${comic.title} series poster`} /> : null}
+          <p className="hint image-path">{comic.series_poster_image_path ?? "No series poster uploaded yet."}</p>
+          <div className="field">
+            <label htmlFor="series-poster">Poster image</label>
+            <input id="series-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+          </div>
+          <div className="actions">
+            <button className="button" type="submit">
+              Upload Series Poster
+            </button>
+          </div>
+        </form>
+      </section>
+
       <section className="section-head" style={{ marginTop: 46 }}>
         <div>
           <div className="eyebrow">Seasons</div>
@@ -125,18 +204,48 @@ export default async function EditComicPage({
       <section className="stack">
         {seasons.map((season) => (
           <article className="row-card" key={season.id}>
-            <h3>Season {season.season_number} — {season.title}</h3>
-            <p className="hint">{season.status}</p>
-            <p>{season.description}</p>
+            <div className="media-row">
+              {season.cover_image_path ? <img className="media-thumb" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
+              <div>
+                <h3>Season {season.season_number} — {season.title}</h3>
+                <p className="hint">{season.status}</p>
+                <p>{season.description}</p>
+              </div>
+            </div>
+
+            <form className="page-edit-grid" action={uploadSeasonCover}>
+              <input type="hidden" name="comicId" value={comic.id} />
+              <input type="hidden" name="seasonId" value={season.id} />
+              <input type="hidden" name="comicSlug" value={comic.slug} />
+              <input type="hidden" name="seasonNumber" value={season.season_number} />
+              <div className="field page-edit-wide">
+                <label htmlFor={`season-cover-${season.id}`}>Season cover</label>
+                <input id={`season-cover-${season.id}`} name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+                <span className="hint image-path">{season.cover_image_path ?? "No season cover uploaded yet."}</span>
+              </div>
+              <div className="actions page-edit-wide">
+                <button className="button-small" type="submit">
+                  Upload Season Cover
+                </button>
+              </div>
+            </form>
+
             <div className="stack">
               {episodes
                 .filter((episode) => episode.season_id === season.id)
                 .map((episode) => (
                   <div className="row-card" key={episode.id} style={{ background: "var(--surface)" }}>
-                    <h3>Episode {episode.episode_number} — {episode.title}</h3>
-                    <p className="hint">{episode.status}</p>
+                    <div className="media-row">
+                      {episode.cover_image_path ? <img className="media-thumb small" src={episode.cover_image_path} alt={`${episode.title} thumbnail`} /> : null}
+                      <div>
+                        <h3>Episode {episode.episode_number} — {episode.title}</h3>
+                        <p className="hint">
+                          {episode.status} / {episode.cover_image_path ? "thumbnail uploaded" : "no thumbnail yet"}
+                        </p>
+                      </div>
+                    </div>
                     <Link className="button-small" href={`/admin/episodes/${episode.id}/pages`}>
-                      Manage Pages
+                      Manage Episode Assets & Pages
                     </Link>
                   </div>
                 ))}

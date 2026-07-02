@@ -16,8 +16,9 @@ export default async function ComicPage({
     title: string;
     subtitle: string | null;
     description: string;
+    series_poster_image_path: string | null;
   }>(
-    `select id, slug, title, subtitle, description
+    `select id, slug, title, subtitle, description, series_poster_image_path
      from public.comics
      where slug = $1 and status = 'published'`,
     [comicSlug]
@@ -32,9 +33,10 @@ export default async function ComicPage({
     season_number: number;
     title: string;
     description: string;
+    cover_image_path: string | null;
     status: string;
   }>(
-    `select id, season_number, title, description, status
+    `select id, season_number, title, description, cover_image_path, status
      from public.seasons
      where comic_id = $1
      order by season_number asc`,
@@ -53,16 +55,22 @@ export default async function ComicPage({
         </Link>
       </section>
       <p className="lead">{comic.description}</p>
+      {comic.series_poster_image_path ? (
+        <img className="series-poster" src={comic.series_poster_image_path} alt={`${comic.title} poster`} />
+      ) : null}
 
       <section className="stack">
         {seasons.map((season) => {
           const locked = season.status === "locked";
           const content = (
-            <>
-              <h3>Season {season.season_number} — {season.title}</h3>
-              <p>{season.description}</p>
-              <p className="hint">{locked ? "Locked" : "Tap anywhere to open"}</p>
-            </>
+            <div className="media-row">
+              {season.cover_image_path ? <img className="media-thumb" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
+              <div>
+                <h3>Season {season.season_number} — {season.title}</h3>
+                <p>{season.description}</p>
+                <p className="hint">{locked ? "Locked" : "Tap anywhere to open"}</p>
+              </div>
+            </div>
           );
 
           return locked ? (
