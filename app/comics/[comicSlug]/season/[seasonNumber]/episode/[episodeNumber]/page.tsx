@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { one, query } from "@/lib/db";
+import { EpisodeListDrawer } from "@/components/EpisodeListDrawer";
 import { ReflectionForm } from "@/components/ReflectionForm";
 
 export default async function EpisodePage({
@@ -125,38 +125,14 @@ export default async function EpisodePage({
           <div className="eyebrow">{comic.title} / {season.title}</div>
           <h2>Episode {episode.episode_number} — {episode.title}</h2>
         </div>
-        <details className="episode-list-drawer">
-          <summary className="button-secondary">Episode List</summary>
-          <aside className="episode-list-panel" aria-label="Episode list">
-            <div className="episode-list-header">
-              <div>
-                <div className="eyebrow">Season {season.season_number}</div>
-                <h3>{season.title}</h3>
-              </div>
-              <span>{seasonEpisodes.length} episode(s)</span>
-            </div>
-            <div className="episode-list-items">
-              {seasonEpisodes.map((item) => {
-                const itemIsFirst = item.episode_number === 1 && season.season_number === 1;
-                const itemUnlocked = itemIsFirst || unlockedIds.has(item.id);
-                const itemCurrent = item.id === episode.id;
-                const itemPath = `/comics/${comic.slug}/season/${season.season_number}/episode/${item.episode_number}`;
-
-                return itemUnlocked ? (
-                  <Link className={`episode-list-item${itemCurrent ? " current" : ""}`} href={itemPath} key={item.id}>
-                    <strong>Episode {item.episode_number} — {item.title}</strong>
-                    <small>{itemCurrent ? "Now reading" : "Open episode"}</small>
-                  </Link>
-                ) : (
-                  <div className="episode-list-item locked" key={item.id}>
-                    <strong>Episode {item.episode_number} — {item.title}</strong>
-                    <small>Locked</small>
-                  </div>
-                );
-              })}
-            </div>
-          </aside>
-        </details>
+        <EpisodeListDrawer
+          comicSlug={comic.slug}
+          currentEpisodeId={episode.id}
+          episodes={seasonEpisodes}
+          seasonNumber={season.season_number}
+          seasonTitle={season.title}
+          unlockedEpisodeIds={[...unlockedIds]}
+        />
       </section>
 
       {notices.error ? <p className="warning">{notices.error}</p> : null}
@@ -218,16 +194,24 @@ export default async function EpisodePage({
           z-index: 30;
         }
 
-        .episode-list-drawer summary {
-          list-style: none;
+        .episode-list-toggle {
+          position: relative;
+          z-index: 2;
         }
 
-        .episode-list-drawer summary::-webkit-details-marker {
-          display: none;
+        .episode-list-scrim {
+          position: fixed;
+          inset: 0;
+          z-index: 1;
+          border: 0;
+          background: transparent;
+          cursor: default;
+          appearance: none;
         }
 
         .episode-list-panel {
           position: absolute;
+          z-index: 2;
           top: calc(100% + 14px);
           right: 0;
           width: min(390px, calc(100vw - 32px));
