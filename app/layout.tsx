@@ -11,6 +11,7 @@ import "./admin-progress-redesign.css";
 import "./mobile-priority.css";
 import "./asset-images.css";
 import "./reader-mobile-fix.css";
+import "./reader-caption-fix.css";
 import "./redundant-cleanup.css";
 import { getUser } from "@/lib/auth";
 import { signOut } from "@/app/actions/auth";
