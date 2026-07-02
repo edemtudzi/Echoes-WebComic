@@ -73,7 +73,7 @@ export default async function SeasonPage({
           Back to Comic
         </Link>
       </section>
-      {season.cover_image_path ? <img className="series-poster" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
+      {season.cover_image_path ? <img className="landscape-hero-image season-landscape-cover" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
       <p className="lead">{season.description}</p>
 
       <section className="stack">
@@ -82,7 +82,7 @@ export default async function SeasonPage({
           const unlocked = isFirstEpisode || unlockedIds.has(episode.id);
           const content = (
             <div className="media-row">
-              {episode.cover_image_path ? <img className="media-thumb" src={episode.cover_image_path} alt={`${episode.title} thumbnail`} /> : null}
+              {episode.cover_image_path ? <img className="media-thumb small" src={episode.cover_image_path} alt={`${episode.title} thumbnail`} /> : null}
               <div>
                 <h3>Episode {episode.episode_number} — {episode.title}</h3>
                 <p>{episode.synopsis}</p>
