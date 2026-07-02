@@ -143,7 +143,7 @@ export default async function EditComicPage({
           <div className="eyebrow">Series Assets</div>
           <h2>Upload public images.</h2>
         </div>
-        <p>These images are separate from comic pages. Use them for cards, posters, and promotion.</p>
+        <p>Use landscape 16:9 for series poster and season cover. Use portrait only for cards, thumbnails, and now-streaming poster art.</p>
       </section>
 
       <section className="form-card asset-output-card">
@@ -185,6 +185,7 @@ export default async function EditComicPage({
             <div className="field">
               <label htmlFor="comic-cover">Cover image</label>
               <input id="comic-cover" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+              <span className="asset-format-note">Recommended: portrait 4:5 or 2:3. Keep title readable at small card size.</span>
             </div>
             <div className="actions">
               <button className="button" type="submit">
@@ -214,6 +215,7 @@ export default async function EditComicPage({
             <div className="field">
               <label htmlFor="now-streaming-poster">Poster image</label>
               <input id="now-streaming-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+              <span className="asset-format-note">Recommended: portrait 9:16. This is the vertical promotional poster.</span>
             </div>
             <div className="actions">
               <button className="button" type="submit">
@@ -234,15 +236,16 @@ export default async function EditComicPage({
 
         <article className="form-card asset-card">
           <h3>Series poster / promo art</h3>
-          {comic.series_poster_image_path ? <img className="asset-preview" src={comic.series_poster_image_path} alt={`${comic.title} series poster`} /> : null}
+          {comic.series_poster_image_path ? <img className="asset-preview landscape-preview" src={comic.series_poster_image_path} alt={`${comic.title} series poster`} /> : null}
           <p className="hint image-path">{comic.series_poster_image_path ?? "No series poster uploaded yet."}</p>
           <form action={uploadComicAsset}>
             <input type="hidden" name="comicId" value={comic.id} />
             <input type="hidden" name="comicSlug" value={comic.slug} />
             <input type="hidden" name="assetType" value="series_poster" />
             <div className="field">
-              <label htmlFor="series-poster">Poster image</label>
+              <label htmlFor="series-poster">Landscape promo image</label>
               <input id="series-poster" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+              <span className="asset-format-note">Required for clean desktop: landscape 16:9, ideally 1920×1080 or 2400×1350. Keep important faces and text inside the center safe area.</span>
             </div>
             <div className="actions">
               <button className="button" type="submit">
@@ -273,7 +276,7 @@ export default async function EditComicPage({
         {seasons.map((season) => (
           <article className="row-card" key={season.id}>
             <div className="media-row">
-              {season.cover_image_path ? <img className="media-thumb" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
+              {season.cover_image_path ? <img className="media-thumb landscape-thumb" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
               <div>
                 <h3>Season {season.season_number} — {season.title}</h3>
                 <p className="hint">{season.status}</p>
@@ -289,6 +292,7 @@ export default async function EditComicPage({
               <div className="field page-edit-wide">
                 <label htmlFor={`season-cover-${season.id}`}>Season cover</label>
                 <input id={`season-cover-${season.id}`} name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+                <span className="asset-format-note">Required for clean desktop: landscape 16:9, ideally 1920×1080 or 2400×1350.</span>
                 <span className="hint image-path">{season.cover_image_path ?? "No season cover uploaded yet."}</span>
               </div>
               <div className="actions page-edit-wide">
