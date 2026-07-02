@@ -31,7 +31,6 @@ export default async function LibraryPage() {
           <p className="lead">
             Read cinematic web-comic series, submit reflections, and unlock the next part of each journey as the library grows.
           </p>
-          <p className="library-note">Every published series appears here. New worlds can be added from the admin upload channel.</p>
         </div>
 
         <div className="feature-poster-card library-feature-poster" aria-hidden="true">

@@ -45,15 +45,6 @@ export default async function ComicPage({
 
   return (
     <main className="view">
-      <section className="section-head">
-        <div>
-          <div className="eyebrow">Comic</div>
-          <h2>{comic.title}</h2>
-        </div>
-        <Link className="button-secondary" href="/library">
-          Back to Library
-        </Link>
-      </section>
       <p className="lead">{comic.description}</p>
       {comic.series_poster_image_path ? (
         <img className="landscape-hero-image series-landscape-poster" src={comic.series_poster_image_path} alt={`${comic.title} poster`} />
