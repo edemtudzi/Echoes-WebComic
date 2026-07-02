@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ensureAssetColumns } from "@/lib/asset-schema";
 import { getSessionUser } from "@/lib/session";
 
 export async function getUser() {
@@ -21,6 +22,8 @@ export async function requireAdmin() {
   if (user.role !== "admin") {
     redirect("/library");
   }
+
+  await ensureAssetColumns();
 
   return user;
 }

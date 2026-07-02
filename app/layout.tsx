@@ -12,6 +12,7 @@ import "./mobile-priority.css";
 import "./asset-images.css";
 import { getUser } from "@/lib/auth";
 import { signOut } from "@/app/actions/auth";
+import { GlobalFormLoader } from "@/components/GlobalFormLoader";
 import { HeaderNav } from "@/app/header-nav";
 
 export const metadata: Metadata = {
@@ -53,6 +54,7 @@ export default async function RootLayout({
           {user ? <HeaderNav isAdmin={isAdmin} signOutAction={signOut} /> : null}
         </header>
 
+        <GlobalFormLoader />
         {children}
       </body>
     </html>
