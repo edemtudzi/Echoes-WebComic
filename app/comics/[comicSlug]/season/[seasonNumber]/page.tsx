@@ -64,15 +64,6 @@ export default async function SeasonPage({
 
   return (
     <main className="view">
-      <section className="section-head">
-        <div>
-          <div className="eyebrow">{comic.title}</div>
-          <h2>{season.title}</h2>
-        </div>
-        <Link className="button-secondary" href={`/comics/${comic.slug}`}>
-          Back to Comic
-        </Link>
-      </section>
       {season.cover_image_path ? <img className="landscape-hero-image season-landscape-cover" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
       <p className="lead">{season.description}</p>
 
