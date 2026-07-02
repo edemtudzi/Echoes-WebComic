@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { replaceEpisodePageImage, updatePageStatus, uploadEpisodePage } from "@/app/actions/admin";
+import { replaceEpisodePageImage, updatePageStatus, uploadEpisodeCover, uploadEpisodePage } from "@/app/actions/admin";
 import { requireAdmin } from "@/lib/auth";
 import { one, query } from "@/lib/db";
 
@@ -19,6 +19,7 @@ export default async function EpisodePagesAdminPage({
     episode_number: number;
     title: string;
     synopsis: string;
+    cover_image_path: string | null;
     status: string;
     season_id: string;
     season_number: number;
@@ -32,6 +33,7 @@ export default async function EpisodePagesAdminPage({
        e.episode_number,
        e.title,
        e.synopsis,
+       e.cover_image_path,
        e.status,
        s.id as season_id,
        s.season_number,
@@ -75,7 +77,7 @@ export default async function EpisodePagesAdminPage({
     <main className="view">
       <section className="section-head">
         <div>
-          <div className="eyebrow">Admin / Pages</div>
+          <div className="eyebrow">Admin / Episode Assets & Pages</div>
           <h2>{episode.title}</h2>
         </div>
         <Link className="button-secondary" href={`/admin/comics/${episode.comic_id}`}>
@@ -90,6 +92,7 @@ export default async function EpisodePagesAdminPage({
         <aside className="reader-side form-card">
           <div className="eyebrow">{episode.comic_title}</div>
           <h3>Episode {episode.episode_number}</h3>
+          {episode.cover_image_path ? <img className="asset-preview" src={episode.cover_image_path} alt={`${episode.title} thumbnail`} /> : null}
           <p>{episode.synopsis}</p>
           <p className="hint">
             Season {episode.season_number} / {episode.status} / {pageRows.length} page(s)
@@ -97,18 +100,40 @@ export default async function EpisodePagesAdminPage({
         </aside>
 
         <div className="stack">
+          <form className="form-card asset-upload-card" action={uploadEpisodeCover}>
+            <input type="hidden" name="episodeId" value={episode.id} />
+            <input type="hidden" name="comicSlug" value={episode.comic_slug} />
+            <input type="hidden" name="seasonNumber" value={episode.season_number} />
+            <input type="hidden" name="episodeNumber" value={episode.episode_number} />
+            <h3>Upload episode cover / thumbnail</h3>
+            <p className="hint">
+              This becomes the episode card image. It is separate from the reader pages and will not become Panel 01.
+            </p>
+            <p className="hint page-path">{episode.cover_image_path ?? "No episode cover uploaded yet."}</p>
+            <div className="field">
+              <label htmlFor="episode-cover">Episode cover image</label>
+              <input id="episode-cover" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+            </div>
+            <div className="actions">
+              <button className="button" type="submit">
+                Upload Episode Cover
+              </button>
+            </div>
+          </form>
+
           <form className="form-card" action={uploadEpisodePage}>
             <input type="hidden" name="episodeId" value={episode.id} />
             <input type="hidden" name="comicSlug" value={episode.comic_slug} />
             <input type="hidden" name="seasonNumber" value={episode.season_number} />
             <input type="hidden" name="episodeNumber" value={episode.episode_number} />
-            <h3>Upload page</h3>
+            <h3>Upload story page / panel</h3>
+            <p className="hint">Use this only for reader panels, for example episode-1-panel-01.png through episode-1-panel-31.png.</p>
             <div className="field">
               <label htmlFor="page_number">Page number</label>
               <input id="page_number" name="page_number" type="number" min={1} required defaultValue={pageRows.length + 1} />
             </div>
             <div className="field">
-              <label htmlFor="image">Image</label>
+              <label htmlFor="image">Panel image</label>
               <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
             </div>
             <div className="field">
@@ -129,7 +154,7 @@ export default async function EpisodePagesAdminPage({
             </div>
             <div className="actions">
               <button className="button" type="submit">
-                Upload Page
+                Upload Story Page
               </button>
             </div>
           </form>
@@ -139,7 +164,7 @@ export default async function EpisodePagesAdminPage({
               <article className="row-card page-admin-card" key={page.id}>
                 <div className="page-admin-head">
                   <div>
-                    <div className="eyebrow">Uploaded page</div>
+                    <div className="eyebrow">Uploaded story page</div>
                     <h3>Page {page.page_number}</h3>
                   </div>
                   <span className="tag">{page.status}</span>
@@ -170,7 +195,7 @@ export default async function EpisodePagesAdminPage({
                     <input type="hidden" name="episodeNumber" value={episode.episode_number} />
                     <input type="hidden" name="pageNumber" value={page.page_number} />
                     <div className="field">
-                      <label htmlFor={`replacement-${page.id}`}>Replace image</label>
+                      <label htmlFor={`replacement-${page.id}`}>Replace panel image</label>
                       <input id={`replacement-${page.id}`} name="replacementImage" type="file" accept="image/png,image/jpeg,image/webp" required />
                     </div>
                     <div className="field">
@@ -182,7 +207,7 @@ export default async function EpisodePagesAdminPage({
                       <textarea id={`caption-${page.id}`} name="caption" defaultValue={page.caption ?? ""} />
                     </div>
                     <button className="button-small" type="submit">
-                      Replace Page Image
+                      Replace Story Page
                     </button>
                   </form>
                 </div>

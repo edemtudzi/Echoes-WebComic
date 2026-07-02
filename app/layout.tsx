@@ -9,6 +9,7 @@ import "./graphics-refresh.css";
 import "./dashboard-compact.css";
 import "./admin-progress-redesign.css";
 import "./mobile-priority.css";
+import "./asset-images.css";
 import { getUser } from "@/lib/auth";
 import { signOut } from "@/app/actions/auth";
 import { HeaderNav } from "@/app/header-nav";

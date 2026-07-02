@@ -26,8 +26,9 @@ export default async function SeasonPage({
     season_number: number;
     title: string;
     description: string;
+    cover_image_path: string | null;
   }>(
-    `select id, season_number, title, description
+    `select id, season_number, title, description, cover_image_path
      from public.seasons
      where comic_id = $1 and season_number = $2`,
     [comic.id, Number(seasonNumber)]
@@ -42,9 +43,10 @@ export default async function SeasonPage({
     episode_number: number;
     title: string;
     synopsis: string;
+    cover_image_path: string | null;
     status: string;
   }>(
-    `select id, episode_number, title, synopsis, status
+    `select id, episode_number, title, synopsis, cover_image_path, status
      from public.episodes
      where season_id = $1
      order by episode_number asc`,
@@ -71,6 +73,7 @@ export default async function SeasonPage({
           Back to Comic
         </Link>
       </section>
+      {season.cover_image_path ? <img className="series-poster" src={season.cover_image_path} alt={`${season.title} cover`} /> : null}
       <p className="lead">{season.description}</p>
 
       <section className="stack">
@@ -78,11 +81,14 @@ export default async function SeasonPage({
           const isFirstEpisode = episode.episode_number === 1 && season.season_number === 1;
           const unlocked = isFirstEpisode || unlockedIds.has(episode.id);
           const content = (
-            <>
-              <h3>Episode {episode.episode_number} — {episode.title}</h3>
-              <p>{episode.synopsis}</p>
-              <p className="hint">{unlocked ? "Tap anywhere to read" : "Locked until the previous reflection is submitted"}</p>
-            </>
+            <div className="media-row">
+              {episode.cover_image_path ? <img className="media-thumb" src={episode.cover_image_path} alt={`${episode.title} thumbnail`} /> : null}
+              <div>
+                <h3>Episode {episode.episode_number} — {episode.title}</h3>
+                <p>{episode.synopsis}</p>
+                <p className="hint">{unlocked ? "Tap anywhere to read" : "Locked until the previous reflection is submitted"}</p>
+              </div>
+            </div>
           );
 
           return unlocked ? (
