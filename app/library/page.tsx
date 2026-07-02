@@ -34,13 +34,9 @@ export default async function LibraryPage() {
           <p className="library-note">Every published series appears here. New worlds can be added from the admin upload channel.</p>
         </div>
 
-        <div className="feature-poster-card" aria-hidden="true">
+        <div className="feature-poster-card library-feature-poster" aria-hidden="true">
           <div className={`poster-image library-poster ${featuredImage ? "uploaded-poster" : ""}`}>
             {featuredImage ? <img src={featuredImage} alt="" /> : null}
-            <div className="poster-caption">
-              <span>{comics.length} published series</span>
-              <h2>{featuredComic ? "Now Streaming" : "Series Coming Soon"}</h2>
-            </div>
           </div>
         </div>
       </section>
